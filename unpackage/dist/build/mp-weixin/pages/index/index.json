@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "myicon": "../../components/Myicon/Myicon"
+  }
+}

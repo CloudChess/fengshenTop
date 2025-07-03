@@ -1,0 +1,1 @@
+<view class="myheader"><view class="myheader-blank"></view><view class="myheader-container"><view class="status_bar" style="height:var(--status-bar-height);width:100%"></view><view class="custom-navbar"><view class="back-button" bindtap="{{a}}">返回</view><view>{{b}}</view><view wx:if="{{c}}" class="navbar-username">{{d}}</view></view></view></view>

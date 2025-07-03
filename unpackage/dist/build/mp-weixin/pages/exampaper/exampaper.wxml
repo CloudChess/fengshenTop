@@ -1,0 +1,1 @@
+<view><view class="exampaper"><exam-qlist wx:if="{{a}}" u-i="b5eb5bbe-0" bind:__l="__l" u-p="{{a}}"></exam-qlist></view></view>

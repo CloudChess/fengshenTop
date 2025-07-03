@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "my-header": "../../components/MyHeader/MyHeader",
+    "uni-section": "../../uni_modules/uni-section/components/uni-section/uni-section",
+    "qiun-data-charts": "../../uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts"
+  }
+}
