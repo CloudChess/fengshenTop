@@ -36,7 +36,7 @@
       <view class="main-content">
         <view class="main-header">
           <text class="welcome">{{ greeting }}，张三！</text>
-          <text class="subtitle">设备部管理驾驶舱</text>
+          <text class="subtitle">设备部管理面板</text>
         </view>
         <view class="main-section">
           <!-- 上方卡片区 -->
@@ -68,22 +68,69 @@
               </view>
             </view>
             <view class="card card-overview">
-              <view class="card-title">管理员出勤</view>
-              
+              <view class="card-title">
+                <text>管理员出勤</text>
+                <text class="card-title-count">25/26</text>
+              </view>
+              <view class="card-content">
+                <view
+                  v-for="(person, index) in adminAbsentList"
+                  :key="index"
+                  class="absent-list-item"
+                  :class="{ 'has-problem': person.hasProblem }"
+                  @click="showEmployeeProblemDevices(person)"
+                >
+                  <text class="absent-name">{{ person.name }}</text>
+                  <text class="absent-section">{{ person.section }}</text>
+                  <text class="absent-reason">{{ person.reason }}</text>
+                </view>
+              </view>
             </view>
             <view class="card card-overview">
-              <view class="card-title">保全工出勤</view>
-              
+              <view class="card-title">
+                <text>保全工出勤</text>
+                <text class="card-title-count">68/70</text>
+              </view>
+              <view class="card-content">
+                <view
+                  v-for="(person, index) in adminAbsentList"
+                  :key="index"
+                  class="absent-list-item"
+                  :class="{ 'has-problem': person.hasProblem }"
+                  @click="showEmployeeProblemDevices(person)"
+                >
+                  <text class="absent-name">{{ person.name }}</text>
+                  <text class="absent-section">{{ person.section }}</text>
+                  <text class="absent-reason">{{ person.reason }}</text>
+                </view>
+              </view>
             </view>
           </view>
           <!-- 下方卡片区 -->
           <view class="card-row">
             <view class="card card-task">
-              <view class="card-title">今日任务</view>
+             <view class="card-title">任务状况</view>
               <view class="task-list">
-                <view class="task-item">设备巡检（已完成 3/5）</view>
-                <view class="task-item">维修任务（进行中 2/4）</view>
-                <view class="task-item">异常处理（待处理 1）</view>
+                <view
+                  v-for="(section, idx) in sectionTasks"
+                  :key="section.section"
+                  class="section-item"
+                  @click="toggleSection(section.section)"
+                  :style="{ cursor: 'pointer', fontWeight: expandedSection === section.section ? 'bold' : 'normal' }"
+                >
+                  {{ section.section }}
+                  <span style="float:right;">{{ expandedSection === section.section ? '▲' : '▼' }}</span>
+                  <view
+                    v-if="expandedSection === section.section"
+                    v-for="task in section.tasks"
+                    :key="task.name"
+                    class="task-item"
+                    @click.stop="showTaskDetail(task, section.section)"
+                    >
+                    <span>{{ task.name }}</span>
+                    <span style="float:right;">{{ task.progress }}%</span>
+                  </view>
+                </view>
               </view>
             </view>
             <view class="card card-progress">
@@ -173,20 +220,53 @@
             <text class="popup-close" @click="closeAttendancePopup">×</text>
           </view>
           <view class="popup-body">
-            <view class="attendance-list">
-              <view class="attendance-item" v-for="(person, index) in attendancePopupData.people" :key="index">
-                <view class="person-info">
-                  <text class="person-name">{{ person.name }}</text>
-                  <text class="person-role">{{ person.role }}</text>
-                </view>
-                <view class="attendance-status" :class="'status-' + person.status">
-                  <text>{{ person.statusText }}</text>
-                </view>
-                <view class="attendance-reason" v-if="person.reason">
-                  <text class="reason-label">原因：</text>
-                  <text class="reason-text">{{ person.reason }}</text>
+            <view v-if="attendancePopupData.devices && attendancePopupData.devices.length">
+              <view class="device-list">
+                <view class="device-item" v-for="(device, index) in attendancePopupData.devices" :key="index">
+                  <view class="device-header">
+                    <view class="device-info">
+                      <text class="device-name">{{ device.name }}</text>
+                      <text class="device-desc">{{ device.description }}</text>
+                    </view>
+                    <view class="device-status" :class="'status-' + device.statusType">
+                      <text>{{ device.statusText }}</text>
+                    </view>
+                  </view>
+                  <view class="device-details">
+                    <view class="detail-row">
+                      <text class="detail-label">工段：</text>
+                      <text class="detail-value">{{ device.section }}</text>
+                    </view>
+                    <view class="detail-row">
+                      <text class="detail-label">原因：</text>
+                      <text class="detail-value">{{ device.reason }}</text>
+                    </view>
+                    <view class="detail-row">
+                      <text class="detail-label">时间：</text>
+                      <text class="detail-value">{{ device.time }}</text>
+                    </view>
+                    <view class="detail-row">
+                      <text class="detail-label">负责人：</text>
+                      <text class="detail-value">{{ device.admin }} / {{ device.worker }}</text>
+                    </view>
+                    <view class="detail-row">
+                      <text class="detail-label">进度：</text>
+                      <view class="progress-section">
+                        <view class="progress-container">
+                          <view class="progress-bar-bg-small">
+                            <view class="progress-bar-small" :style="{width: device.progressPercent + '%'}"></view>
+                          </view>
+                          <text class="progress-text-small">{{ device.progressPercent }}%</text>
+                        </view>
+                        <text class="progress-description">{{ device.progressTxt }}</text>
+                      </view>
+                    </view>
+                  </view>
                 </view>
               </view>
+            </view>
+            <view v-else>
+              <text>该员工负责的设备运行正常</text>
             </view>
           </view>
         </view>
@@ -195,9 +275,18 @@
   </template>
   
   <script setup>
-  import { ref,onMounted,reactive,onUnmounted } from 'vue';
+  import { ref,onMounted,reactive,onUnmounted,computed  } from 'vue';
   import Logo from '../../components/Logo/Logo.vue';
-  import StackedBarChart from '../../components/StackedBarChart.vue';
+  import {
+    sidebarMenuList as rawSidebarMenuList,
+    deviceOperationCategories,
+    attendanceDetails,
+    deviceStatusData as rawDeviceStatusData,
+    sectionTasks
+  } from './mockDashboardData.js';
+
+  const deviceStatusData = reactive(rawDeviceStatusData);
+  const sidebarMenuList = reactive(rawSidebarMenuList);
 
   const isMobileScreen = ref(window.innerWidth < 900);
   const sidebarCollapsed = ref(false);
@@ -217,597 +306,96 @@
     people: []
   });
 
-  // 设备运行图表数据
-  const deviceOperationCategories = ['炼胶', '压出', '成型', '硫化'];
-  const deviceOperationSeries = [
-    { name: '运行', data: [16, 12, 18, 12] },
-    { name: '停机', data: [6, 3, 4, 1] },
-    { name: '故障', data: [3, 5, 8, 2] }
-  ];
-  const deviceOperationColors = ['#34c759', '#b0b8d0', '#ff4d4f'];
+  const expandedSection = ref(null); // 当前展开的工段
+  const showTaskPopup = ref(false);
+  const taskPopupData = ref({}); // 弹窗任务数据
 
-  // 管理员出勤图表数据
-  const adminAttendanceCategories = ['炼胶', '压出', '成型', '硫化'];
-  const adminAttendanceSeries = [
-    { name: '出勤', data: [8, 6, 10, 4] },
-    { name: '未出勤', data: [2, 1, 2, 1] }
-  ];
-  const adminAttendanceColors = ['#34c759', '#ff9500'];
+  function toggleSection(section) {
+    expandedSection.value = expandedSection.value === section ? null : section;
+  }
+  
+  function showTaskDetail(task, section) {
+    taskPopupData.value = { ...task, section };
+    showTaskPopup.value = true;
+  }
+  
+  function closeTaskPopup() {
+    showTaskPopup.value = false;
+  }
 
-  // 保全工出勤图表数据
-  const workerAttendanceCategories = ['炼胶', '压出', '成型', '硫化'];
-  const workerAttendanceSeries = [
-    { name: '出勤', data: [15, 12, 18, 8] },
-    { name: '未出勤', data: [3, 2, 4, 2] }
-  ];
-  const workerAttendanceColors = ['#34c759', '#ff9500'];
-
-  // 出勤详情数据
-  const attendanceDetails = {
-    admin: {
-      '炼胶': {
-        absent: [
-          { name: '张师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '病假' },
-          { name: '王师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '事假' }
-        ]
-      },
-      '压出': {
-        absent: [
-          { name: '陈师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '病假' }
-        ]
-      },
-      '成型': {
-        absent: [
-          { name: '杨师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '事假' },
-          { name: '郭师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '年假' }
-        ]
-      },
-      '硫化': {
-        absent: [
-          { name: '朱师傅', role: '管理员', status: 'absent', statusText: '未出勤', reason: '病假' }
-        ]
+  //辅助函数：获取员工负责的有问题设备
+  function getEmployeeProblemDevices(employeeName) {
+  const result = [];
+  deviceStatusData.forEach(section => {
+    section.statuses.forEach(status => {
+      if (status.name === '停机' || status.name === '故障') {
+        status.devices.forEach(device => {
+          if (device.admin === employeeName || device.worker === employeeName) {
+            result.push({
+              ...device,
+              section: section.name,
+              status: status.name
+            });
+          }
+        });
       }
-    },
-    worker: {
-      '炼胶': {
-        absent: [
-          { name: '李师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '病假' },
-          { name: '赵师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '事假' },
-          { name: '孙师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '年假' }
-        ]
-      },
-      '压出': {
-        absent: [
-          { name: '刘师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '病假' },
-          { name: '黄师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '事假' }
-        ]
-      },
-      '成型': {
-        absent: [
-          { name: '徐师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '病假' },
-          { name: '何师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '事假' },
-          { name: '高师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '年假' },
-          { name: '唐师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '病假' }
-        ]
-      },
-      '硫化': {
-        absent: [
-          { name: '冯师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '病假' },
-          { name: '周师傅', role: '保全工', status: 'absent', statusText: '未出勤', reason: '事假' }
-        ]
-      }
-    }
+    });
+  });
+  return result;
+}
+
+// 管理员出勤列表
+const adminAbsentList = computed(() => {
+  // 遍历所有工段
+  let list = [];
+  Object.entries(attendanceDetails.admin).forEach(([section, { absent }]) => {
+    absent.forEach(person => {
+      const problemDevices = getEmployeeProblemDevices(person.name);
+      list.push({
+        ...person,
+        section,
+        hasProblem: problemDevices.length > 0,
+        problemDevices
+      });
+    });
+  });
+  // 有问题的排前面
+  return list.sort((a, b) => Number(b.hasProblem) - Number(a.hasProblem));
+});
+
+// 保全工出勤列表
+const workerAbsentList = computed(() => {
+  let list = [];
+  Object.entries(attendanceDetails.worker).forEach(([section, { absent }]) => {
+    absent.forEach(person => {
+      const problemDevices = getEmployeeProblemDevices(person.name);
+      list.push({
+        ...person,
+        section,
+        hasProblem: problemDevices.length > 0,
+        problemDevices
+      });
+    });
+  });
+  return list.sort((a, b) => Number(b.hasProblem) - Number(a.hasProblem));
+});
+
+
+// 弹窗显示员工负责的有问题设备
+function showEmployeeProblemDevices(person) {
+  attendancePopupData.value = {
+    title: `${person.name}（${person.section}）负责的问题设备`,
+    people: [], // 不用
+    devices: person.problemDevices
   };
+  showAttendancePopup.value = true;
+}
 
-  // 设备运行图表点击事件
-  function onDeviceOperationClick(series, groupIdx, sIdx) {
-    const section = deviceOperationCategories[groupIdx];
-    const status = series.name;
-    
-    if (status === '停机' || status === '故障') {
-      // 显示设备详情
-      const devices = deviceStatusData[groupIdx].statuses.find(s => s.name === status)?.devices || [];
-      showDeviceDetail(section, status, devices);
-    }
-  }
-
-  // 管理员出勤图表点击事件
-  function onAdminAttendanceClick(series, groupIdx, sIdx) {
-    const section = adminAttendanceCategories[groupIdx];
-    const status = series.name;
-    
-    if (status === '未出勤') {
-      // 显示管理员未出勤详情
-      const absentPeople = attendanceDetails.admin[section]?.absent || [];
-      attendancePopupData.value = {
-        title: `${section} - 管理员未出勤`,
-        people: absentPeople
-      };
-      showAttendancePopup.value = true;
-    }
-  }
-
-  // 保全工出勤图表点击事件
-  function onWorkerAttendanceClick(series, groupIdx, sIdx) {
-    const section = workerAttendanceCategories[groupIdx];
-    const status = series.name;
-    
-    if (status === '未出勤') {
-      // 显示保全工未出勤详情
-      const absentPeople = attendanceDetails.worker[section]?.absent || [];
-      attendancePopupData.value = {
-        title: `${section} - 保全工未出勤`,
-        people: absentPeople
-      };
-      showAttendancePopup.value = true;
-    }
-  }
 
   // 关闭出勤详情弹窗
   function closeAttendancePopup() {
     showAttendancePopup.value = false;
   }
-
-  // 设备状态数据
-  const deviceStatusData = reactive([
-    {
-      name: '炼胶',
-      maxCount: 25,
-      statuses: [
-        { name: '停机', type: 'stopped', count: 6, devices: [
-          { 
-            name: '炼胶机A-01', 
-            description: '主炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 08:30',
-            admin: '张师傅',
-            worker: '李师傅',
-            progressPercent: 80,
-            progressTxt: '已完成设备清洁和润滑，正在更换磨损部件'
-          },
-          { 
-            name: '炼胶机A-02', 
-            description: '辅助炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '计划停机检修',
-            time: '2024-01-15 09:00',
-            admin: '王师傅',
-            worker: '赵师傅',
-            progressPercent: 60,
-            progressTxt: '已拆卸主要部件，正在检查内部结构'
-          },
-          { 
-            name: '炼胶机A-03', 
-            description: '备用炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '原料不足',
-            time: '2024-01-15 10:15',
-            admin: '张师傅',
-            worker: '孙师傅',
-            progressPercent: 0,
-            progressTxt: '等待原料供应，预计下午到货'
-          },
-          { 
-            name: '炼胶机A-04', 
-            description: '备用炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 11:00',
-            admin: '王师傅',
-            worker: '周师傅',
-            progressPercent: 90,
-            progressTxt: '维护工作基本完成，正在进行最终测试'
-          },
-          { 
-            name: '炼胶机A-05', 
-            description: '备用炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '计划停机检修',
-            time: '2024-01-15 13:30',
-            admin: '张师傅',
-            worker: '吴师傅',
-            progressPercent: 40,
-            progressTxt: '正在更换易损件，预计还需要2小时'
-          },
-          { 
-            name: '炼胶机A-06', 
-            description: '备用炼胶设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '原料不足',
-            time: '2024-01-15 14:00',
-            admin: '王师傅',
-            worker: '郑师傅',
-            progressPercent: 0,
-            progressTxt: '原料库存不足，已联系供应商紧急调货'
-          }
-        ]},
-        { name: '故障', type: 'error', count: 3, devices: [
-          { 
-            name: '炼胶机B-01', 
-            description: '主炼胶设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '电机过热保护',
-            time: '2024-01-15 07:45',
-            admin: '张师傅',
-            worker: '李师傅',
-            progressPercent: 30,
-            progressTxt: '已检查电机温度，正在分析过热原因'
-          },
-          { 
-            name: '炼胶机B-02', 
-            description: '辅助炼胶设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '轴承损坏',
-            time: '2024-01-15 08:20',
-            admin: '王师傅',
-            worker: '赵师傅',
-            progressPercent: 70,
-            progressTxt: '新轴承已到货，正在安装调试'
-          },
-          { 
-            name: '炼胶机B-03', 
-            description: '备用炼胶设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '控制系统故障',
-            time: '2024-01-15 09:30',
-            admin: '张师傅',
-            worker: '孙师傅',
-            progressPercent: 50,
-            progressTxt: '已定位故障点，正在更换控制模块'
-          }
-        ]}
-      ]
-    },
-    {
-      name: '压出',
-      maxCount: 20,
-      statuses: [
-        { name: '停机', type: 'stopped', count: 3, devices: [
-          { 
-            name: '压出机C-01', 
-            description: '主压出设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 08:00',
-            admin: '陈师傅',
-            worker: '刘师傅',
-            progressPercent: 85,
-            progressTxt: '维护工作接近完成，正在进行设备校准'
-          },
-          { 
-            name: '压出机C-02', 
-            description: '辅助压出设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '计划停机检修',
-            time: '2024-01-15 09:30',
-            admin: '林师傅',
-            worker: '黄师傅',
-            progressPercent: 45,
-            progressTxt: '正在检查设备运行状态，准备更换零件'
-          },
-          { 
-            name: '压出机C-03', 
-            description: '备用压出设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '原料不足',
-            time: '2024-01-15 10:45',
-            admin: '陈师傅',
-            worker: '马师傅',
-            progressPercent: 0,
-            progressTxt: '等待原料配送，预计明天上午到货'
-          }
-        ]},
-        { name: '故障', type: 'error', count: 5, devices: [
-          { 
-            name: '压出机D-01', 
-            description: '主压出设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '螺杆磨损严重',
-            time: '2024-01-15 06:30',
-            admin: '陈师傅',
-            worker: '刘师傅',
-            progressPercent: 20,
-            progressTxt: '正在拆卸螺杆，准备更换新配件'
-          },
-          { 
-            name: '压出机D-02', 
-            description: '辅助压出设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '温度控制系统故障',
-            time: '2024-01-15 07:15',
-            admin: '林师傅',
-            worker: '黄师傅',
-            progressPercent: 60,
-            progressTxt: '已更换温度传感器，正在调试系统'
-          },
-          { 
-            name: '压出机D-03', 
-            description: '备用压出设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '液压系统泄漏',
-            time: '2024-01-15 08:45',
-            admin: '陈师傅',
-            worker: '马师傅',
-            progressPercent: 80,
-            progressTxt: '已修复泄漏点，正在补充液压油'
-          },
-          { 
-            name: '压出机D-04', 
-            description: '备用压出设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '电机轴承损坏',
-            time: '2024-01-15 09:20',
-            admin: '林师傅',
-            worker: '刘师傅',
-            progressPercent: 40,
-            progressTxt: '正在拆卸电机，准备更换轴承'
-          },
-          { 
-            name: '压出机D-05', 
-            description: '备用压出设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '控制系统异常',
-            time: '2024-01-15 10:00',
-            admin: '陈师傅',
-            worker: '黄师傅',
-            progressPercent: 25,
-            progressTxt: '正在检查控制面板，分析异常原因'
-          }
-        ]}
-      ]
-    },
-    {
-      name: '成型',
-      maxCount: 30,
-      statuses: [
-        { name: '停机', type: 'stopped', count: 4, devices: [
-          { 
-            name: '成型机E-01', 
-            description: '主成型设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 08:15',
-            admin: '杨师傅',
-            worker: '徐师傅',
-            progressPercent: 75,
-            progressTxt: '已完成主要维护工作，正在进行功能测试'
-          },
-          { 
-            name: '成型机E-02', 
-            description: '辅助成型设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '计划停机检修',
-            time: '2024-01-15 09:45',
-            admin: '郭师傅',
-            worker: '何师傅',
-            progressPercent: 55,
-            progressTxt: '检修工作过半，正在更换关键部件'
-          },
-          { 
-            name: '成型机E-03', 
-            description: '备用成型设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '原料不足',
-            time: '2024-01-15 11:00',
-            admin: '杨师傅',
-            worker: '高师傅',
-            progressPercent: 0,
-            progressTxt: '原料库存不足，已申请紧急采购'
-          },
-          { 
-            name: '成型机E-04', 
-            description: '备用成型设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 12:30',
-            admin: '郭师傅',
-            worker: '唐师傅',
-            progressPercent: 95,
-            progressTxt: '维护工作已完成，等待开机测试'
-          }
-        ]},
-        { name: '故障', type: 'error', count: 8, devices: [
-          { 
-            name: '成型机F-01', 
-            description: '主成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '模具损坏',
-            time: '2024-01-15 06:45',
-            admin: '杨师傅',
-            worker: '徐师傅',
-            progressPercent: 15,
-            progressTxt: '正在评估模具损坏程度，准备修复方案'
-          },
-          { 
-            name: '成型机F-02', 
-            description: '辅助成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '液压系统故障',
-            time: '2024-01-15 07:30',
-            admin: '郭师傅',
-            worker: '何师傅',
-            progressPercent: 65,
-            progressTxt: '已更换液压泵，正在调试系统压力'
-          },
-          { 
-            name: '成型机F-03', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '温度控制系统异常',
-            time: '2024-01-15 08:00',
-            admin: '杨师傅',
-            worker: '高师傅',
-            progressPercent: 35,
-            progressTxt: '正在检查温控系统，分析异常原因'
-          },
-          { 
-            name: '成型机F-04', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '电机过热保护',
-            time: '2024-01-15 08:30',
-            admin: '郭师傅',
-            worker: '唐师傅',
-            progressPercent: 85,
-            progressTxt: '已修复散热系统，正在测试电机运行'
-          },
-          { 
-            name: '成型机F-05', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '轴承损坏',
-            time: '2024-01-15 09:00',
-            admin: '杨师傅',
-            worker: '徐师傅',
-            progressPercent: 45,
-            progressTxt: '正在拆卸轴承，准备更换新配件'
-          },
-          { 
-            name: '成型机F-06', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '控制系统故障',
-            time: '2024-01-15 09:30',
-            admin: '郭师傅',
-            worker: '何师傅',
-            progressPercent: 70,
-            progressTxt: '已更换控制主板，正在重新编程'
-          },
-          { 
-            name: '成型机F-07', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '传感器故障',
-            time: '2024-01-15 10:00',
-            admin: '杨师傅',
-            worker: '高师傅',
-            progressPercent: 30,
-            progressTxt: '正在检查传感器连接，准备更换故障传感器'
-          },
-          { 
-            name: '成型机F-08', 
-            description: '备用成型设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '气动系统泄漏',
-            time: '2024-01-15 10:30',
-            admin: '郭师傅',
-            worker: '唐师傅',
-            progressPercent: 55,
-            progressTxt: '已定位泄漏点，正在更换密封圈'
-          }
-        ]}
-      ]
-    },
-    {
-      name: '硫化',
-      maxCount: 15,
-      statuses: [
-        { name: '停机', type: 'stopped', count: 1, devices: [
-          { 
-            name: '硫化机G-01', 
-            description: '主硫化设备', 
-            statusType: 'stopped', 
-            statusText: '停机',
-            reason: '设备维护保养',
-            time: '2024-01-15 08:30',
-            admin: '朱师傅',
-            worker: '冯师傅',
-            progressPercent: 90,
-            progressTxt: '维护工作基本完成，正在进行最终检查'
-          }
-        ]},
-        { name: '故障', type: 'error', count: 2, devices: [
-          { 
-            name: '硫化机H-01', 
-            description: '主硫化设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '温度控制系统故障',
-            time: '2024-01-15 07:00',
-            admin: '朱师傅',
-            worker: '冯师傅',
-            progressPercent: 60,
-            progressTxt: '已更换温控器，正在调试温度参数'
-          },
-          { 
-            name: '硫化机H-02', 
-            description: '辅助硫化设备', 
-            statusType: 'error', 
-            statusText: '故障',
-            reason: '压力传感器异常',
-            time: '2024-01-15 08:00',
-            admin: '朱师傅',
-            worker: '冯师傅',
-            progressPercent: 40,
-            progressTxt: '正在检查压力传感器，准备校准或更换'
-          }
-        ]}
-      ]
-    }
-  ]);
-
-  const sidebarMenuList = reactive([
-    {
-      name: '首页总览',
-      icon: '🏠',
-      path: '/pages/dashboard/dashboard'
-    },
-    {
-      name: '设备管理',
-      icon: '🛠️',
-      path: '/pages/dashboard/dashboard'
-    },
-    {
-      name: '管理员',
-      icon: '👨‍💼',
-      path: '/pages/dashboard/dashboard'
-    },
-    {
-      name: '保全工',
-      icon: '👷‍♂️',
-      path: '/pages/dashboard/dashboard'
-    },
-    {
-     name: '培训考试',
-     icon: '📋',
-     path: '/pages/dashboard/dashboard'
-    },
-    {
-     name: '个人中心',
-     icon: '👤',
-     path: '/pages/dashboard/dashboard'
-    }
-  ])
 
   // 计算柱状图宽度
   function getBarWidth(count, maxCount, type) {
@@ -845,10 +433,6 @@
   function closePopup() {
     showPopup.value = false;
   }
-
-
-
-
   
   // 手动 收缩宽屏时的 Sidebar
   function toggleSidebar() {
@@ -1082,7 +666,69 @@
     font-weight: 600;
     color: #3478f6;
     margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
   }
+  .card-title-count {
+    font-size: 14px;
+    font-weight: 400;
+    color: #999;
+    margin-left: 10px;
+  } 
+
+  .absent-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    background: #f4f8ff;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    border-left: 4px solid transparent;
+}
+.absent-list-item:hover {
+  background: #e8f0fe;
+  box-shadow: 0 2px 8px rgba(52,120,246,0.08);
+}
+.absent-list-item.has-problem {
+  background: #fffdf0; 
+}
+.absent-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  min-width: 60px;
+}
+.absent-section {
+  font-size: 14px;
+  color: #888;
+  min-width: 40px;
+  margin: 0 10px;
+}
+.absent-reason {
+  font-size: 13px;
+  color: #999;
+  min-width: 70px;
+  text-align: center;
+}
+.absent-problem {
+  font-size: 13px;
+  color: #999;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: #f0f0f0;
+  min-width: 70px;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+.absent-problem.problem {
+  color: #fff;
+  background: #ff4d4f;
+  font-weight: 600;
+}
+
   .card-chart {
     flex: 2.2;
     align-items: center;
@@ -1166,6 +812,41 @@
     flex: 1;
     min-width: 200px;
   }
+  .card-content{
+    max-height: 220px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  /* 滚动条整体 */
+.card-content::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+/* 滚动条滑块 */
+.card-content::-webkit-scrollbar-thumb {
+  background: #dbeafe;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+/* 滚动条滑块悬浮时 */
+.card-content::-webkit-scrollbar-thumb:hover {
+  background: #b6d0f7;
+}
+
+/* 滚动条轨道 */
+.card-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 火狐浏览器 */
+.card-content {
+  scrollbar-width: thin;
+  scrollbar-color: #dbeafe transparent;
+}
+
   .chart-placeholder {
     width: 100%;
     height: 120px;
@@ -1187,7 +868,7 @@
     flex-direction: column;
     gap: 8px;
   }
-  .task-item {
+  .section-item {
     font-size: 14px;
     color: #555;
     background: #f4f8ff;
