@@ -4,121 +4,104 @@
 			"path": "pages/login/login",
 			"style": {
 				"navigationBarTitleText": "登录",
-				"app-plus": {
-					"titleNView": {
-						"autoBackButton": false
-					}
-				}
-		
-			}
-		},
-		{
-			"path" : "pages/index/index",
-			"style" : 
-			{
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/register/register",
-			"style" : 
-			{
-				"navigationBarTitleText" : "注册",
-				"enablePullDownRefresh" : false
-			}
-		},
-		{
-			"path" : "pages/exam/exam",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
-				"navigationStyle": "custom",
-				"enablePullDownRefresh" : false
-			}
-		},
-		{
-			"path" : "pages/exampaper/exampaper",
-			"style" : 
-			{
+			"path": "pages/dashboard/dashboard",
+			"style": {
+				"navigationBarTitleText": "首页总览",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/teaminfo/teaminfo",
-			"style" : 
-			{
+			"path": "pages/device/deviceList",
+			"style": {
+				"navigationBarTitleText": "设备管理",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/teaminfoDetail/teaminfoDetail",
-			"style" : 
-			{
-				"navigationStyle": "custom",
-				"enablePullDownRefresh" : false
-			}
-		},
-		{
-			"path" : "pages/perfStats/perfStats",
-			"style" : 
-			{
-				"navigationStyle": "custom",
-				"enablePullDownRefresh" : false
-			}
-		},
-		{
-			"path" : "pages/perfDay/perfDay",
-			"style" : 
-			{
+			"path": "pages/device/deviceDetail",
+			"style": {
+				"navigationBarTitleText": "设备详情",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/myinfo/myinfo",
-			"style" : 
-			{
+			"path": "pages/admin/adminList",
+			"style": {
+				"navigationBarTitleText": "设备管理员管理",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/teamchart/teamchart",
-			"style" : 
-			{
+			"path": "pages/admin/adminDetail",
+			"style": {
+				"navigationBarTitleText": "管理员详情",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/perfDetail/perfDetail",
-			"style" : 
-			{
+			"path": "pages/worker/workerList",
+			"style": {
+				"navigationBarTitleText": "保全工管理",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/addexam/addexam",
-			"style" : 
-			{
+			"path": "pages/worker/workerDetail",
+			"style": {
+				"navigationBarTitleText": "保全工详情",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/teamStruct/teamStruct",
-			"style" : 
-			{
+			"path": "pages/exam/examList",
+			"style": {
+				"navigationBarTitleText": "培训考试",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/markPaper/markPaper",
-			"style" : 
-			{
+			"path": "pages/exam/examDetail",
+			"style": {
+				"navigationBarTitleText": "考试详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/exam/examCreate",
+			"style": {
+				"navigationBarTitleText": "出卷/编辑试卷",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/exam/examResult",
+			"style": {
+				"navigationBarTitleText": "考试结果",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/permission/permission",
+			"style": {
+				"navigationBarTitleText": "权限管理",
 				"navigationStyle": "custom"
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "设备部管理系统",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
