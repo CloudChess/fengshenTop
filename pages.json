@@ -1,5 +1,5 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
 			"path": "pages/login/login",
 			"style": {
@@ -8,93 +8,9 @@
 			}
 		},
 		{
-			"path": "pages/dashboard/dashboard",
+			"path": "pages/deviceDept/index",
 			"style": {
-				"navigationBarTitleText": "首页总览",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/device/deviceList",
-			"style": {
-				"navigationBarTitleText": "设备管理",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/device/deviceDetail",
-			"style": {
-				"navigationBarTitleText": "设备详情",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/admin/adminList",
-			"style": {
-				"navigationBarTitleText": "设备管理员管理",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/admin/adminDetail",
-			"style": {
-				"navigationBarTitleText": "管理员详情",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/worker/workerList",
-			"style": {
-				"navigationBarTitleText": "保全工管理",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/worker/workerDetail",
-			"style": {
-				"navigationBarTitleText": "保全工详情",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/exam/examList",
-			"style": {
-				"navigationBarTitleText": "培训考试",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/exam/examDetail",
-			"style": {
-				"navigationBarTitleText": "考试详情",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/exam/examCreate",
-			"style": {
-				"navigationBarTitleText": "出卷/编辑试卷",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/exam/examResult",
-			"style": {
-				"navigationBarTitleText": "考试结果",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/profile/profile",
-			"style": {
-				"navigationBarTitleText": "个人中心",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/permission/permission",
-			"style": {
-				"navigationBarTitleText": "权限管理",
+				"navigationBarTitleText": "设备部管理",
 				"navigationStyle": "custom"
 			}
 		}

@@ -1,37 +1,5 @@
 <template>
     <view class="dashboard-root">
-      <!-- 左侧导航栏 -->
-      <view :class="['sidebar', sidebarCollapsed===true ? 'collapsed' : '', appCollapsed===true ? 'appCollapsed' : '']">
-        <view :class="['sidebar-logo',appCollapsed===true?'appCollapsed':'']">
-          <Logo class="logo-img" />
-          <text :class="['logo-title',appCollapsed===true?'appCollapsed':'']" v-show="sidebarCollapsed!==true">XX部设备部门</text>
-        </view>
-        <view :class="['sidebar-menu',appCollapsed===true?'appCollapsed':'']">
-            <view class="menu-item-container" v-for="(item,index) in sidebarMenuList" :key="index" @click="toggleSidebApp">
-                <view :class="['menu-item',activeIndex==index?'active':'']" @click="activeIndex = index" v-show="appCollapsed===null||(sidebarCollapsed===null && appCollapsed===true && activeIndex==index)||(sidebarCollapsed===null && appCollapsed===false)">
-                    <text class="menu-icon">{{ item.icon }}</text>
-                    <text class="menu-text" v-show="sidebarCollapsed!==true">{{ item.name }}</text>
-                </view>
-            </view>
-        </view>
-        <view class="sidebar-toggle" @click="toggleSidebar">
-          <text>{{ sidebarCollapsed ? '→' : '←' }}</text>
-        </view>
-        <view class="sidebar-user" :class="appCollapsed===true?'appCollapsed':''" >
-          <view class="user-avatar">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="16" fill="#dbeafe"/>
-              <circle cx="16" cy="13" r="6" fill="#b6d0f7"/>
-              <ellipse cx="16" cy="24" rx="9" ry="5" fill="#b6d0f7"/>
-            </svg>
-          </view>
-          <view :class="['user-info', sidebarCollapsed===true ? 'collapsed' : '',appCollapsed===true ?'appCollapsed':'']">
-            <text class="user-name">张三</text>
-            <text class="user-role">领导</text>
-          </view>
-        </view>
-      </view>
-  
       <!-- 右侧内容区 -->
       <view class="main-content">
         <view class="main-header">
@@ -118,27 +86,85 @@
                   @click="toggleSection(section.section)"
                   :style="{ cursor: 'pointer', fontWeight: expandedSection === section.section ? 'bold' : 'normal' }"
                 >
-                  {{ section.section }}
-                  <span style="float:right;">{{ expandedSection === section.section ? '▲' : '▼' }}</span>
-                  <view
-                    v-if="expandedSection === section.section"
-                    v-for="task in section.tasks"
-                    :key="task.name"
-                    class="task-item"
-                    @click.stop="showTaskDetail(task, section.section)"
-                    >
-                    <span>{{ task.name }}</span>
-                    <span style="float:right;">{{ task.progress }}%</span>
+                  <view class="section-item-title">
+                    {{ section.section }}
+                    <span style="float:right;">{{ expandedSection === section.section ? '▲' : '▼' }}</span>
+                  </view>  
+                  
+                  <!-- 周期任务 -->
+                  <view class="periodic-tasks-section" v-if="expandedSection === section.section">
+                    <view class="task-category-title">
+                      <text class="category-text">周期任务</text>
+                      <span class="toggle-periodic" @click.stop="togglePeriodicTasks(section.section)">
+                       {{ expandedPeriodicTasks.includes(section.section) ? '收起' : '展开' }}
+                      </span>
+                    </view>
+                    <view v-if="expandedPeriodicTasks.includes(section.section)" class="periodic-tasks-list">
+                      <view
+                        v-for="task in section.periodicTasks"
+                        :key="task.name"
+                        class="task-item periodic-task"
+                        @click.stop="showTaskDetail(task, section.section, 'periodic')"
+                      >
+                        <view class="task-main-row">
+                          <span class="task-item-label">{{ task.name }}</span>
+                          <span class="task-progress">{{ task.progress }}%</span>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+
+                  <!-- 重点任务 -->
+                  <view class="key-tasks-section" v-if="expandedSection === section.section">
+                    <view class="task-category-title">
+                      <text class="category-text">重点任务</text>
+                    </view>
+                    <view class="key-tasks-list">
+                      <view
+                        v-for="task in section.keyTasks"
+                        :key="task.name"
+                        class="task-item key-task"
+                        @click.stop="showTaskDetail(task, section.section, 'key')"
+                      >
+                        <view class="task-main-row">
+                          <span class="task-item-label">{{ task.name }}</span>
+                          <span class="task-owner">{{ task.owner }}</span>
+                        </view>
+                        <view class="task-latest-progress-row">
+                          <template v-if="task.history && task.history.length">
+                            <span class="task-item-label">最新进度：</span>
+                            <span class="latest-progress-desc">{{ task.history[task.history.length-1].desc }}</span>
+                            <span class="latest-progress-time">({{ task.history[task.history.length-1].time }})</span>
+                          </template>
+                        </view>
+                      </view>
+                    </view>
                   </view>
                 </view>
               </view>
             </view>
-            <view class="card card-progress">
-              <view class="card-title">维修进度</view>
-              <view class="progress-bar-bg">
-                <view class="progress-bar" :style="{width: '70%'}"></view>
+            <view class="card">
+              <view class="card-title alarm-card-title-flex">
+                <span>报警信息</span>
+                <view class="alarm-date-picker">
+                  <input type="date" v-model="alarmStartDate" class="alarm-date-input" />
+                  <span style="margin: 0 6px;">-</span>
+                  <input type="date" v-model="alarmEndDate" class="alarm-date-input" />
+                </view>
               </view>
-              <view class="progress-text">70%</view>
+              <view class="alarm-list">
+                <view v-for="(alarm, idx) in filteredAlarmList" :key="idx" class="alarm-item">
+                  <view class="alarm-main">
+                    <span class="alarm-type">{{ alarm.type }}</span>
+                    <span class="alarm-status" :class="'status-' + alarm.status">{{ alarm.status }}</span>
+                  </view>
+                  <view class="alarm-detail">
+                    <span class="alarm-time">{{ alarm.time }}</span>
+                    <span class="alarm-section">{{ alarm.section }}</span>
+                    <span class="alarm-device">{{ alarm.device }}</span>
+                  </view>
+                </view>
+              </view>
             </view>
             <view class="card card-shortcut">
               <view class="card-title">快捷入口</view>
@@ -271,28 +297,111 @@
           </view>
         </view>
       </view>
+
+      <!-- 任务详情弹窗 -->
+      <view class="popup-overlay" v-if="showTaskPopup" @click="closeTaskPopup">
+        <view class="popup-content task-popup-content" @click.stop>
+          <view class="popup-header">
+            <text class="popup-title">{{ taskPopupData.section }} - {{ taskPopupData.name }}</text>
+            <text class="popup-close" @click="closeTaskPopup">×</text>
+          </view>
+          <view class="popup-body task-popup-body">
+            <view class="task-info-block">
+              <view class="task-detail-row">
+                <text class="detail-label">任务类型：</text>
+                <text class="detail-value">{{ taskPopupData.type === 'periodic' ? '周期任务' : '重点任务' }}</text>
+              </view>
+              <view class="task-detail-row">
+                <text class="detail-label">任务名称：</text>
+                <text class="detail-value">{{ taskPopupData.name }}</text>
+              </view>
+              <view v-if="taskPopupData.type === 'periodic'">
+                <view class="task-detail-row">
+                  <text class="detail-label">负责人类型：</text>
+                  <text class="detail-value">{{ taskPopupData.ownerType }}</text>
+                </view>
+                <view class="task-detail-row">
+                  <text class="detail-label">进度：</text>
+                  <text class="detail-value">{{ taskPopupData.progress }}%（{{ taskPopupData.finished }}/{{ taskPopupData.total }}）</text>
+                </view>
+              </view>
+              <view v-else>
+                <view class="task-detail-row">
+                  <text class="detail-label">开始时间：</text>
+                  <text class="detail-value">{{ taskPopupData.startTime }}</text>
+                </view>
+                <view class="task-detail-row">
+                  <text class="detail-label">负责人：</text>
+                  <text class="detail-value">{{ taskPopupData.owner }}</text>
+                </view>
+              </view>
+            </view>
+            <view v-if="taskPopupData.type === 'periodic'">
+              <view class="task-history-block">
+                <view class="history-title">未完成人员</view>
+                <view class="history-list">
+                  <view class="history-item" v-for="(name, idx) in taskPopupData.unfinishedList" :key="idx">
+                    <span class="history-desc">{{ name }}</span>
+                  </view>
+                  <view v-if="!taskPopupData.unfinishedList || taskPopupData.unfinishedList.length === 0" class="history-item">
+                    <span class="history-desc">全部已完成</span>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <view v-else-if="taskPopupData.history && taskPopupData.history.length">
+              <view class="task-history-block">
+                <view class="history-title">历史进度</view>
+                <view class="history-list">
+                  <template v-for="(h, idx) in [...taskPopupData.history].reverse()" :key="idx">
+                    <view
+                      class="history-item"
+                      :class="{ 'latest-history-item': h.isLatest && idx === 0 }"
+                    >
+                      <p class="history-time-progress">
+                        <span class="history-time">{{ h.time }}</span>
+                        <span class="history-progress">{{ h.progress }}</span>
+                      </p>
+                      <span class="history-desc">{{ h.desc }}</span>
+                    </view>
+                  </template>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
     </view>
   </template>
   
   <script setup>
   import { ref,onMounted,reactive,onUnmounted,computed  } from 'vue';
-  import Logo from '../../components/Logo/Logo.vue';
+  
   import {
     sidebarMenuList as rawSidebarMenuList,
     deviceOperationCategories,
     attendanceDetails,
     deviceStatusData as rawDeviceStatusData,
-    sectionTasks
-  } from './mockDashboardData.js';
+    sectionTasks,
+    alarmList
+  } from '@/utils/mockData.js';
+
+  // 时间筛选相关
+  const alarmStartDate = ref('');
+  const alarmEndDate = ref('');
+
+  function filterAlarmsByDate(list) {
+    if (!alarmStartDate.value || !alarmEndDate.value) return list.filter(alarm => alarm.status !== '已处理');
+    return list.filter(alarm => {
+      const alarmDate = alarm.time.split(' ')[0];
+      return alarm.status !== '已处理' && alarmDate >= alarmStartDate.value && alarmDate <= alarmEndDate.value;
+    });
+  }
+  const filteredAlarmList = computed(() => filterAlarmsByDate(alarmList));
 
   const deviceStatusData = reactive(rawDeviceStatusData);
-  const sidebarMenuList = reactive(rawSidebarMenuList);
 
-  const isMobileScreen = ref(window.innerWidth < 900);
-  const sidebarCollapsed = ref(false);
-  const appCollapsed = ref(false);
   const greeting = ref('');
-  const activeIndex = ref(0);
   const showPopup = ref(false);
   const popupData = ref({
     section: '',
@@ -309,18 +418,28 @@
   const expandedSection = ref(null); // 当前展开的工段
   const showTaskPopup = ref(false);
   const taskPopupData = ref({}); // 弹窗任务数据
+  const expandedPeriodicTasks = ref([]); // 展开的周期任务工段
 
   function toggleSection(section) {
     expandedSection.value = expandedSection.value === section ? null : section;
   }
   
-  function showTaskDetail(task, section) {
-    taskPopupData.value = { ...task, section };
+  function showTaskDetail(task, section, type) {
+    taskPopupData.value = { ...task, section, type };
     showTaskPopup.value = true;
   }
   
   function closeTaskPopup() {
     showTaskPopup.value = false;
+  }
+
+  function togglePeriodicTasks(section) {
+    const index = expandedPeriodicTasks.value.indexOf(section);
+    if (index > -1) {
+      expandedPeriodicTasks.value.splice(index, 1);
+    } else {
+      expandedPeriodicTasks.value.push(section);
+    }
   }
 
   //辅助函数：获取员工负责的有问题设备
@@ -434,19 +553,7 @@ function showEmployeeProblemDevices(person) {
     showPopup.value = false;
   }
   
-  // 手动 收缩宽屏时的 Sidebar
-  function toggleSidebar() {
-    if(appCollapsed.value===null){
-      sidebarCollapsed.value = !sidebarCollapsed.value;
-    }
-    
-  }
-  // 手动 收缩窄屏时的 Sidebar
-  function toggleSidebApp() {
-    if(sidebarCollapsed.value===null){
-      appCollapsed.value = !appCollapsed.value;
-    }
-  }
+ 
   // 获取问候语
   function getGreeting() {
     const hour = new Date().getHours();
@@ -455,27 +562,12 @@ function showEmployeeProblemDevices(person) {
     return '晚上好';
   }
 
-  // 监听窗口大小变化
-  function handleResize() {
-    isMobileScreen.value = window.innerWidth < 900;
-    if (isMobileScreen.value) {
-      appCollapsed.value = true; // 宽屏锁定
-      sidebarCollapsed.value = null;
-    } else {
-      sidebarCollapsed.value = true; // 窄屏锁定
-      appCollapsed.value = null;
-    }
-  }
 
   onMounted(() => {
     greeting.value = getGreeting();
-    handleResize();
-    window.addEventListener('resize', handleResize);
   });
 
-  onUnmounted(() => {
-    window.removeEventListener('resize', handleResize);
-  });
+  
 
   </script> 
   
@@ -485,143 +577,7 @@ function showEmployeeProblemDevices(person) {
     min-height: 100vh;
     background: #f8f8f8;
   }
-  .sidebar {
-    width: 220px;
-    background: #fff;
-    box-shadow: 2px 0 12px rgba(52,120,246,0.06);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 0 24px 0;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .sidebar.collapsed {
-    width: 64px;
-    min-width: 64px;
-    align-items: flex-start;
-  }
   
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    margin: 32px 0 24px 0;
-    justify-content: center;
-  }
-  .sidebar.collapsed .sidebar-logo {
-    justify-content: flex-start;
-    margin-left: 10px;
-  }
-  .logo-img {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    margin-right: 10px;
-  }
-  .logo-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #3478f6;
-    letter-spacing: 1px;
-  }
-  .sidebar-menu {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .menu-item {
-    width: 90%;
-    padding: 8px 0 8px 24px;
-    font-size: 16px;
-    color: #333;
-    cursor: pointer;
-    border-left: 3px solid transparent;
-    transition: background 0.2s, border-color 0.2s, padding 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-    z-index: 1;
-  }
-  .menu-icon {
-    font-size: 18px;
-    width: 32px;
-    text-align: center;
-    margin-right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sidebar.collapsed .menu-item {
-    padding: 8px 0 8px 0;
-    justify-content: center;
-  }
-  .menu-item.active {
-    background: #e8f0fe;
-    color: #3478f6;
-    border-left: 3px solid #3478f6;
-    font-weight: bold;
-  }
-  .sidebar.collapsed .menu-item.active::before {
-    width: 4px;
-    left: 0;
-  }
-  .sidebar-toggle {
-    width: 100%;
-    text-align: right;
-    padding: 6px 18px 6px 0;
-    color: #3478f6;
-    font-size: 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .sidebar.collapsed .sidebar-toggle {
-    text-align: center;
-    padding: 6px 0;
-  }
-  .sidebar-user {
-    display: flex;
-    align-items: center;
-    margin-top: 24px;
-    background: #f4f8ff;
-    border-radius: 8px;
-    padding: 10px 16px;
-    transition: padding 0.2s;
-  }
-  .sidebar.collapsed .sidebar-user {
-    padding: 10px 8px;
-  }
-  .sidebar.app-collapsed .sidebar-user {
-    width: 80px;
-  }
-  .user-avatar {
-    width: 38px;
-    height: 38px;
-    background: #dbeafe;
-    border-radius: 50%;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .user-info {
-    display: flex;
-    flex-direction: column;
-  }
-  .user-info.collapsed{
-    display: none;
-  }
-  .user-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #222;
-  }
-  .user-role {
-    font-size: 13px;
-    color: #888;
-  }
   .main-content {
     flex: 1;
     padding: 36px 36px 24px 36px;
@@ -738,7 +694,7 @@ function showEmployeeProblemDevices(person) {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
   .chart-section {
     display: flex;
@@ -770,7 +726,6 @@ function showEmployeeProblemDevices(person) {
     position: relative;
   }
   .bar-item:hover {
-    transform: scale(1.02);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
   .bar-item.status-stopped {
@@ -866,19 +821,92 @@ function showEmployeeProblemDevices(person) {
   .task-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
   .section-item {
-    font-size: 14px;
-    color: #555;
-    background: #f4f8ff;
-    border-radius: 6px;
-    padding: 6px 12px;
+    font-size: 15px;
+    color: #222;
+    background: linear-gradient(135deg, #f4f8ff 0%, #e8f0fe 100%);
+    border: 1.5px solid #dbeafe;
+    border-radius: 10px;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    font-weight: 600;
+    margin-bottom: 2px;
+    box-shadow: 0 2px 8px rgba(52,120,246,0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
-  .card-progress {
-    flex: 1.2;
+  .section-item:hover {
+    background: linear-gradient(135deg, #e8f0fe 0%, #dbeafe 100%);
+    border-color: #3478f6;
+    box-shadow: 0 4px 16px rgba(52,120,246,0.10);
+  }
+  .section-item span:last-child {
+    font-size: 13px;
+    color: #3478f6;
+    transition: transform 0.2s;
+  }
+  .section-item-title {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .task-item {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 7px;
+    box-shadow: none;
+    padding: 12px 16px;
+    margin: 6px 0 6px 24px;
+    transition: background 0.2s, border-color 0.2s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 48px;
+  }
+  .task-item:hover {
+    background: #f7faff;
+    border-color: #b6d0f7;
+  }
+  .task-main-row {
+    font-size: 15px;
+    font-weight: 500;
+    color: #222;
+    margin-bottom: 4px;
+    gap: 12px;
+  }
+  .task-latest-progress-row {
+    font-size: 13px;
+    color: #3478f6;
+    gap: 4px;
+    line-height: 1.6;
+  }
+  .task-owner {
+    color: #888;
+    font-size: 13px;
+    margin-left: 10px;
+    font-weight: 400;
+  }
+  .task-item-label {
+    color: #888;
+    font-size: 15px;
+  }
+  .latest-progress-desc {
+    color: #3478f6;
+    font-weight: 500;
+  }
+  .latest-progress-time {
+    color: #bbb;
+    margin-left: 2px;
   }
   .progress-bar-bg {
     width: 100%;
@@ -901,8 +929,6 @@ function showEmployeeProblemDevices(person) {
   }
   .card-shortcut {
     flex: 1;
-    align-items: center;
-    justify-content: center;
   }
   .shortcut-list {
     display: flex;
@@ -927,12 +953,11 @@ function showEmployeeProblemDevices(person) {
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(52,120,246,0.10);
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition:  box-shadow 0.15s;
     position: relative;
     margin-bottom: 8px;
   }
   .shortcut-btn:active {
-    transform: scale(0.97);
     box-shadow: 0 1px 4px rgba(52,120,246,0.08);
   }
   .shortcut-icon {
@@ -951,7 +976,7 @@ function showEmployeeProblemDevices(person) {
     background: linear-gradient(135deg, #34c759 0%, #a8ff78 100%);
   }
   .gradient-yellow {
-    background: linear-gradient(135deg, #ffe58f 0%, #ffd666 100%);
+    background: linear-gradient(135deg, #fffdfa 0%, #fffbe0 100%);
     color: #ad6800;
   }
 
@@ -1186,122 +1211,355 @@ function showEmployeeProblemDevices(person) {
     font-style: italic;
   }
 
-  @media (max-width: 1100px) and (min-width: 900px) {
-    .logo-title{
-      display: none;
-    }
-    .main-content {
-      padding: 36px 2vw 12px 100px;
-    }
-    .card-row {
-      flex-direction: column;
-      gap: 18px;
-    }
-    .sidebar {
-      width: 64px;
-      height: 98vh;
-      min-width: 64px;
-      padding-bottom: 24px;
-      align-items: center;
-      position: fixed;
-    }
-    .menu-item {
-      width: 100%;
-      min-width: 0;
-      max-width: 100%;
-      justify-content: center;
-      padding: 8px 0 8px 0;
-    }
-    .menu-item text:not(.menu-icon) {
-      display: none;
-    }
-    .user-avatar {
-      margin-right: 0;
-    }
-    .user-info {
-      display: none;
-    }
-    .sidebar-user {
-      justify-content: center;
-      padding: 10px 0;
-    }
-    .sidebar-toggle{
-        display: none;
-    }
+  /* 任务详情弹窗样式 */
+  .task-item.periodic-task {
+    background: #f8faff;
+    border: 1px solid #e8f0fe;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 6px 0 6px 24px;
+    box-shadow: 0 2px 8px rgba(52,120,246,0.04);
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+  .task-item.periodic-task:hover {
+    background: #f8faff;
+    border-color: #3478f6;
+    box-shadow: 0 4px 12px rgba(52,120,246,0.10);
+  }
+  .task-item.key-task {
+    background: #fffdfa;
+    border: 1px solid #fffbe0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 6px 0 6px 24px;
+    box-shadow: 0 2px 8px rgba(255,214,102,0.3);
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .task-item.key-task:hover {
+    background: #fffbe6;
+    border-color: #ffe58f;
+    box-shadow: 0 2px 8px rgba(255,15,102,0.3);
+  }
+  .task-item.periodic-task span:first-child {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+  }
+  .task-item.periodic-task span:last-child {
+    font-size: 13px;
+    color: #3478f6;
+    font-weight: 600;
+    background: #e8f0fe;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: 10px;
+    min-width: 38px;
+    text-align: right;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .task-item.periodic-task:hover span:last-child {
+    background: #3478f6;
+    color: #fff;
+  }
+  .task-item.key-task span:first-child {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+  }
+  .task-item.key-task span:last-child {
+    font-size: 12px;
+    color: #a5a5a5;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin-left: 10px;
+    max-width: 120px;
+    text-align: center;
+    line-height: 1.3;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .task-category-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left:3px solid #3478f6;
+  }
+  .category-text {
+    color: #949494;
+  }
+  .toggle-periodic {
+    font-size: 13px;
+    color: #3478f6;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 2px 8px;
+    background: #e8f0fe;
+    border-radius: 12px;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .toggle-periodic:hover {
+    background: #3478f6;
+    color: #fff;
+  }
+  .periodic-tasks-list {
+    padding-left: 16px;
+    margin-bottom: 12px;
+    border-left:2px solid #e8f0fe;
+  }
+  .key-tasks-section {
+    margin-top: 16px;
+  }
+  .key-tasks-list {
+    padding-left: 16px;
+    border-left:2px solid #ffd666;
+  }
+  .alarm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .alarm-item {
+    background: #fffdfa;
+    border: 1px solid #fffbe0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 4px rgba(255,214,102,0.10);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .alarm-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .alarm-type {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ff9500;
+  }
+  .alarm-status {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: #fffbe0;
+    color: #ad6800;
+  }
+  .alarm-status.status-未处理 {
+    background: #fff0e0;
+    color: #ff4d4f;
+  }
+  .alarm-status.status-处理中 {
+    background: #e6f7ff;
+    color: #1890ff;
+  }
+  .alarm-status.status-已处理 {
+    background: #e6ffed;
+    color: #52c41a;
+  }
+  .alarm-detail {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+  .alarm-time {
+    min-width: 110px;
+  }
+  .alarm-section {
+    min-width: 40px;
+  }
+  .alarm-device {
+    min-width: 80px;
+  }
+  .alarm-card-title-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .alarm-date-picker {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .alarm-date-input {
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .alarm-date-input:focus {
+    border: 1.5px solid #3478f6;
+  }
+  .task-detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .task-detail-row .detail-label {
+    font-size: 14px;
+    color: #888;
+    min-width: 70px;
+  }
+  .task-detail-row .detail-value {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+    word-break: break-all;
+  }
+  .task-popup-content {
+    max-width: 480px;
+    min-width: 320px;
+  }
+  .task-popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .task-info-block {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px 12px 10px 12px;
+    margin-bottom: 0;
+  }
+  .task-history-block {
+    background: #fffdfa;
+    border-radius: 8px;
+    padding: 12px 12px 8px 12px;
+    border: 1px solid #fffbe0;
+  }
+  .history-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ad6800;
+    margin-bottom: 8px;
+  }
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .history-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #666;
+    background: #fffbe6;
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+  .history-time {
+    color: #ad6800;
+    font-weight: 600;
+    min-width: 80px;
+  }
+  .history-progress {
+    color: #3478f6;
+    font-weight: 600;
+    min-width: 48px;
+  }
+  .history-desc {
+    flex: 1;
+    color: #666;
+    word-break: break-all;
+  }
+  .history-time-progress {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+  .task-latest-progress {
+    color: #3478f6;
+    font-size: 13px;
+    margin-left: 10px;
+  }
+  .latest-progress-label {
+    color: #888;
+    font-weight: 500;
+  }
+  .latest-progress-desc {
+    color: #6078a5;
+    font-weight: 600;
+  }
+  .latest-progress-time {
+    color: #bbb;
+    margin-left: 2px;
+  }
+  .history-item.latest-history-item {
+    background: #e6f7ff;
+    border: 1.5px solid #1890ff;
+    color: #222;
+    font-weight: 600;
+    position: relative;
+  }
+  .history-latest-badge {
+    background: #1890ff;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 8px;
+    padding: 2px 8px;
+    margin-left: 10px;
+    font-weight: 600;
+  }
+  .task-main-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .task-latest-progress-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 13px;
+    color: #3478f6;
+    margin-bottom: 2px;
+    line-height: 1.6;
+  }
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-height: 56px;
+  }
+
   @media (max-width: 900px) {
-    .dashboard-root {
-      flex-direction: column;
-    }
-    .sidebar {
-      width: 98vw;
-      min-width: 0;
-      flex-direction: column;
-      justify-content: space-between;
-      padding-bottom: 10px;
-      box-shadow: 0 2px 12px rgba(52,120,246,0.06);
-      position: relative;
-    }
-    .sidebar.appCollapsed{
-      width: 96vw;
-      height: 45px;
-      padding: 0 10px;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0px 1px 10px #d4d4d4;
-    }
-    .sidebar-logo.appCollapsed{
-      margin: 0;
-    }
-    .sidebar-menu{  
-      margin: 0 10px;
-      width: 95%;
-    }
-    .sidebar-menu.appCollapsed{
-      gap: 0;
-    }
-    .menu-item-container{
-      width: 100%;
-    }
-    .menu-item{
-      padding: 10px 0;
-      width:100%;
-      justify-content: center;
-    }
-    .menu-item.appCollapsed{
-      display: none;
-    }
-    .menu-text{
-      display: block;
-    }
-    .sidebar-logo {
-      margin: 18px 0 12px 0;
-    }
-    .logo-title.appCollapsed{
-      display: none;
-    }
-    .sidebar-toggle{
-        display: none;
-    }
-    .sidebar-user{
-        width: 90%;
-        justify-content: flex-end;
-    }
-    .sidebar-user.appCollapsed{
-      background-color:#fff;
-      padding: 0;
-      width: 30px;
-      margin: 0;
-    }
-    .sidebar-user.appCollapsed .user-avatar{
-      height: 30px;
-      width: 30px;
-      margin: 0;
-    }
-    .user-info.appCollapsed{
-      display: none;
-    }
     .main-content{
       padding: 12px 2vw 8px 2vw;
     }

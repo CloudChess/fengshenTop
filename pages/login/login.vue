@@ -40,7 +40,7 @@
       const token = uni.getStorageSync(LOGIN_KEY);
       if (token && token.expire > Date.now()) {
         uni.setStorageSync('username', token.username);
-        uni.reLaunch({ url: '/pages/dashboard/dashboard' });
+        uni.reLaunch({ url: '/pages/deviceDept/index' });
       }
     },
     methods: {
@@ -87,7 +87,8 @@
             } else {
               uni.removeStorageSync(LOGIN_KEY);
             }
-            uni.reLaunch({ url: '/pages/dashboard/dashboard' });
+            //这里的跳转需要更改
+            uni.reLaunch({ url: '/pages/deviceDept/index' });
           } else {
             this.errorMsg = '用户名或密码错误';
           }

@@ -5,32 +5,32 @@ export const sidebarMenuList = [
     {
       name: '首页总览',
       icon: '🏠',
-      path: '/pages/dashboard/dashboard'
+      component:'dashboard'
     },
     {
       name: '设备管理',
       icon: '🛠️',
-      path: '/pages/dashboard/dashboard'
+      component:'deviceManage'
     },
     {
       name: '管理员',
       icon: '👨‍💼',
-      path: '/pages/dashboard/dashboard'
+      component:'adminManage'
     },
     {
       name: '保全工',
       icon: '👷‍♂️',
-      path: '/pages/dashboard/dashboard'
+      component:'workerManage'
     },
     {
       name: '培训考试',
       icon: '📋',
-      path: '/pages/dashboard/dashboard'
+      component:'exam'
     },
     {
       name: '个人中心',
       icon: '👤',
-      path: '/pages/dashboard/dashboard'
+      component:'person'
     }   
   ];
 
@@ -531,28 +531,616 @@ export const deviceStatusData = [
 export const sectionTasks = [
     {
       section: '炼胶',
-      tasks: [
-        { name: '设备巡检', progress: 80, detail: '炼胶设备本周巡检，已完成80%' },
-        { name: '安全培训', progress: 100, detail: '炼胶工段安全培训已全部完成' }
+      periodicTasks: [
+        { name: '设备巡检', ownerType: '管理员', progress: 80, total: 10, finished: 8, unfinishedList: ['张三', '李四'] },
+        { name: '安全培训', ownerType: '管理员', progress: 100, total: 10, finished: 10, unfinishedList: [] },
+        { name: '日常保养', ownerType: '保全工', progress: 95, total: 20, finished: 19, unfinishedList: ['王五'] }
+      ],
+      keyTasks: [
+        { name: '新设备调试', progress: 30, startTime: '2025-07-04', owner: '赵师傅', history: [
+          { time: '2025-07-04', progress: '0%', desc: '设备到厂' },
+          { time: '2025-07-05', progress: '20%', desc: '初步安装完成' },
+          { time: '2025-07-06', progress: '30%', desc: '新购入炼胶机调试工作', isLatest: true }
+        ] },
+        { name: '工艺优化', progress: 60, startTime: '2025-07-05', owner: '孙师傅', history: [
+          { time: '2025-07-05', progress: '0%', desc: '项目启动' },
+          { time: '2025-07-06', progress: '30%', desc: '初步参数调整' },
+          { time: '2025-07-07', progress: '60%', desc: '炼胶工艺参数优化项目', isLatest: true }
+        ] }
       ]
     },
     {
       section: '压出',
-      tasks: [
-        { name: '设备保养', progress: 60, detail: '压出设备保养，部分设备待处理' }
+      periodicTasks: [
+        { name: '设备保养', ownerType: '保全工', progress: 60, total: 15, finished: 9, unfinishedList: ['刘一', '陈二', '赵三', '钱四', '孙五', '周六'] },
+        { name: '质量检查', ownerType: '管理员', progress: 85, total: 10, finished: 8, unfinishedList: ['吴七', '郑八'] }
+      ],
+      keyTasks: [
+        { name: '生产线改造', progress: 45, startTime: '2025-07-03', owner: '周师傅', history: [
+          { time: '2025-07-03', progress: '0%', desc: '项目立项' },
+          { time: '2025-07-04', progress: '20%', desc: '初步改造完成' },
+          { time: '2025-07-05', progress: '45%', desc: '压出生产线自动化改造', isLatest: true }
+        ] },
+        { name: '模具维修', progress: 75, startTime: '2025-07-04', owner: '吴师傅', history: [
+          { time: '2025-07-04', progress: '0%', desc: '任务下发' },
+          { time: '2025-07-05', progress: '40%', desc: '部分模具维修完成' },
+          { time: '2025-07-06', progress: '75%', desc: '关键模具维修工作', isLatest: true }
+        ] }
       ]
     },
     {
       section: '成型',
-      tasks: [
-        { name: '模具更换', progress: 50, detail: '成型模具更换中，预计明天完成' }
+      periodicTasks: [
+        { name: '模具更换', ownerType: '保全工', progress: 50, total: 12, finished: 6, unfinishedList: ['王一', '王二', '王三', '王四', '王五', '王六'] },
+        { name: '设备校准', ownerType: '管理员', progress: 90, total: 10, finished: 9, unfinishedList: ['李一'] }
+      ],
+      keyTasks: [
+        { name: '新产品试制', progress: 20, startTime: '2025-07-03', owner: '高师傅', history: [
+          { time: '2025-07-03', progress: '0%', desc: '项目启动' },
+          { time: '2025-07-04', progress: '10%', desc: '初步试制完成' },
+          { time: '2025-07-05', progress: '20%', desc: '新产品成型工艺试制', isLatest: true }
+        ] },
+        { name: '设备升级', progress: 40, startTime: '2025-07-04', owner: '唐师傅', history: [
+          { time: '2025-07-04', progress: '0%', desc: '项目立项' },
+          { time: '2025-07-05', progress: '20%', desc: '部分系统升级完成' },
+          { time: '2025-07-06', progress: '40%', desc: '成型设备控制系统升级', isLatest: true }
+        ] }
       ]
     },
     {
       section: '硫化',
-      tasks: [
-        { name: '温控检查', progress: 90, detail: '硫化温控系统检查，已完成大部分' }
+      periodicTasks: [
+        { name: '温控检查', ownerType: '管理员', progress: 90, total: 10, finished: 9, unfinishedList: ['冯一'] },
+        { name: '压力测试', ownerType: '保全工', progress: 70, total: 10, finished: 7, unfinishedList: ['朱一', '朱二', '朱三'] }
+      ],
+      keyTasks: [
+        { name: '节能改造', progress: 55, startTime: '2025-07-03', owner: '郑师傅', history: [
+          { time: '2025-07-03', progress: '0%', desc: '项目启动' },
+          { time: '2025-07-04', progress: '30%', desc: '部分节能改造完成' },
+          { time: '2025-07-05', progress: '55%', desc: '硫化设备节能改造项目', isLatest: true }
+        ] },
+        { name: '安全系统升级', progress: 80, startTime: '2025-07-04', owner: '钱师傅', history: [
+          { time: '2025-07-04', progress: '0%', desc: '项目启动' },
+          { time: '2025-07-05', progress: '40%', desc: '部分系统升级完成' },
+          { time: '2025-07-06', progress: '80%', desc: '硫化安全系统升级改造', isLatest: true }
+        ] }
       ]
     }
   ];
 
+// 安全报警信息 mock 数据
+export const alarmList = [
+  {
+    type: '电机过载',
+    time: '2025-07-08 10:05',
+    section: '炼胶',
+    device: '炼胶机A-02',
+    status: '未处理'
+  },
+  {
+    type: '液压系统故障',
+    time: '2025-07-08 09:45',
+    section: '压出',
+    device: '压出机B-01',
+    status: '处理中'
+  },
+  {
+    type: '温度传感器失灵',
+    time: '2025-07-08 09:30',
+    section: '成型',
+    device: '成型机C-01',
+    status: '未处理'
+  },
+  {
+    type: '安全门未关闭',
+    time: '2025-07-08 09:20',
+    section: '硫化',
+    device: '硫化机D-02',
+    status: '未处理'
+  },
+  {
+    type: '电源异常',
+    time: '2025-07-08 08:50',
+    section: '炼胶',
+    device: '炼胶机A-03',
+    status: '已处理'
+  },
+  {
+    type: '气压不足',
+    time: '2025-07-08 08:40',
+    section: '压出',
+    device: '压出机B-03',
+    status: '未处理'
+  },
+  {
+    type: '冷却系统报警',
+    time: '2025-07-07 18:10',
+    section: '成型',
+    device: '成型机C-02',
+    status: '处理中'
+  },
+  {
+    type: '紧急停止',
+    time: '2025-07-07 17:55',
+    section: '硫化',
+    device: '硫化机D-03',
+    status: '已处理'
+  },
+  {
+    type: '润滑油位低',
+    time: '2025-07-07 17:40',
+    section: '炼胶',
+    device: '炼胶机A-04',
+    status: '未处理'
+  },
+  {
+    type: 'PLC通信故障',
+    time: '2025-07-07 16:30',
+    section: '压出',
+    device: '压出机B-04',
+    status: '未处理'
+  },
+  {
+    type: '异常振动',
+    time: '2025-07-07 16:10',
+    section: '成型',
+    device: '成型机C-04',
+    status: '处理中'
+  },
+  {
+    type: '加热器故障',
+    time: '2025-07-07 15:50',
+    section: '硫化',
+    device: '硫化机D-04',
+    status: '未处理'
+  },
+  {
+    type: '高温报警',
+    time: '2025-07-08 09:12',
+    section: '炼胶',
+    device: '炼胶机A-01',
+    status: '未处理'
+  },
+  {
+    type: '气体泄漏',
+    time: '2025-07-08 08:55',
+    section: '压出',
+    device: '压出机B-02',
+    status: '处理中'
+  },
+  {
+    type: '电气故障',
+    time: '2025-07-07 17:30',
+    section: '成型',
+    device: '成型机C-03',
+    status: '已处理'
+  },
+  {
+    type: '压力异常',
+    time: '2025-07-07 15:20',
+    section: '硫化',
+    device: '硫化机D-01',
+    status: '未处理'
+  }
+];
+
+export const machineList = [
+  /**
+   * 设备列表 mock 数据
+   * 字段说明：
+   * id: 设备唯一标识
+   * name: 设备名称（设备类型+#编号）
+   * section: 所属工段（炼胶、压出、成型、硫化）
+   * type: 设备类型
+   * manufacturer: 厂商
+   * principal: 负责人
+   * maintainer: 检修人
+   * entryDate: 入厂时间
+   * status: 运行状态（运行、停机、维护、故障等）
+   * location: 设备位置
+   * lastMaintenance: 上次检修时间
+   * remark: 备注
+   */
+  {
+    id: 1,
+    name: '炼胶机#01',
+    section: '炼胶',
+    type: '炼胶机',
+    manufacturer: '上海橡机',
+    principal: '张师傅',
+    maintainer: '李工',
+    entryDate: '2022-03-15',
+    status: '运行',
+    location: 'A区-1号位',
+    lastMaintenance: '2025-06-20',
+    remark: '运行正常'
+  },
+  {
+    id: 2,
+    name: '压出机#02',
+    section: '压出',
+    type: '压出机',
+    manufacturer: '江苏橡塑',
+    principal: '王师傅',
+    maintainer: '赵工',
+    entryDate: '2021-11-10',
+    status: '维护',
+    location: 'B区-3号位',
+    lastMaintenance: '2025-07-01',
+    remark: '电机更换中'
+  },
+  {
+    id: 3,
+    name: '成型机#03',
+    section: '成型',
+    type: '成型机',
+    manufacturer: '青岛机电',
+    principal: '刘师傅',
+    maintainer: '钱工',
+    entryDate: '2023-01-05',
+    status: '停机',
+    location: 'C区-2号位',
+    lastMaintenance: '2025-06-15',
+    remark: '待更换模具'
+  },
+  {
+    id: 4,
+    name: '硫化机#04',
+    section: '硫化',
+    type: '硫化机',
+    manufacturer: '无锡橡机',
+    principal: '赵师傅',
+    maintainer: '孙工',
+    entryDate: '2020-08-22',
+    status: '故障',
+    location: 'D区-5号位',
+    lastMaintenance: '2025-05-30',
+    remark: '温控异常，待修复'
+  },
+  {
+    id: 5,
+    name: '炼胶机#05',
+    section: '炼胶',
+    type: '炼胶机',
+    manufacturer: '上海橡机',
+    principal: '郑师傅',
+    maintainer: '周工',
+    entryDate: '2024-02-18',
+    status: '运行',
+    location: 'A区-2号位',
+    lastMaintenance: '2025-07-02',
+    remark: ''
+  },
+  // 新增mock数据
+  {
+    id: 6,
+    name: '压出机#06',
+    section: '压出',
+    type: '压出机',
+    manufacturer: '天津橡机',
+    principal: '林师傅',
+    maintainer: '马工',
+    entryDate: '2023-07-12',
+    status: '运行',
+    location: 'B区-5号位',
+    lastMaintenance: '2025-06-28',
+    remark: '新投产设备'
+  },
+  {
+    id: 7,
+    name: '成型机#07',
+    section: '成型',
+    type: '成型机',
+    manufacturer: '广州机电',
+    principal: '高师傅',
+    maintainer: '唐工',
+    entryDate: '2022-09-30',
+    status: '维护',
+    location: 'C区-4号位',
+    lastMaintenance: '2025-07-03',
+    remark: '更换液压系统'
+  },
+  {
+    id: 8,
+    name: '硫化机#08',
+    section: '硫化',
+    type: '硫化机',
+    manufacturer: '成都橡机',
+    principal: '钱师傅',
+    maintainer: '吴工',
+    entryDate: '2021-05-19',
+    status: '运行',
+    location: 'D区-2号位',
+    lastMaintenance: '2025-06-10',
+    remark: '运行平稳'
+  },
+  {
+    id: 9,
+    name: '炼胶机#09',
+    section: '炼胶',
+    type: '炼胶机',
+    manufacturer: '上海橡机',
+    principal: '陈师傅',
+    maintainer: '郑工',
+    entryDate: '2020-12-01',
+    status: '停机',
+    location: 'A区-3号位',
+    lastMaintenance: '2025-05-15',
+    remark: '待检修'
+  },
+  {
+    id: 10,
+    name: '压出机#10',
+    section: '压出',
+    type: '压出机',
+    manufacturer: '江苏橡塑',
+    principal: '孙师傅',
+    maintainer: '冯工',
+    entryDate: '2024-01-10',
+    status: '运行',
+    location: 'B区-6号位',
+    lastMaintenance: '2025-07-05',
+    remark: '自动化升级'
+  }
+]
+
+export const spareList = [
+  {
+    id: 1,
+    name: '主轴轴承',
+    type: '轴承',
+    section: '炼胶',
+    quantity: 12,
+    spec: '6205',
+    model: 'SKF-6205'
+  },
+  {
+    id: 2,
+    name: '液压油缸',
+    type: '液压件',
+    section: '压出',
+    quantity: 4,
+    spec: 'Φ80×200',
+    model: 'YH-80-200'
+  },
+  {
+    id: 3,
+    name: '温控传感器',
+    type: '传感器',
+    section: '硫化',
+    quantity: 8,
+    spec: 'PT100',
+    model: 'WZP-PT100'
+  },
+  {
+    id: 4,
+    name: 'PLC模块',
+    type: '电气元件',
+    section: '成型',
+    quantity: 6,
+    spec: '16点输入',
+    model: 'Siemens S7-1200'
+  },
+  {
+    id: 5,
+    name: '同步带',
+    type: '传动件',
+    section: '压出',
+    quantity: 15,
+    spec: '宽20mm 长1200mm',
+    model: 'HTD-1200-20'
+  },
+  {
+    id: 6,
+    name: '电机',
+    type: '电机',
+    section: '炼胶',
+    quantity: 2,
+    spec: '7.5kW 380V',
+    model: 'YE3-132M-4'
+  },
+  {
+    id: 7,
+    name: '气动阀',
+    type: '气动元件',
+    section: '成型',
+    quantity: 10,
+    spec: 'DN20',
+    model: 'AIRTAC-4V210-08'
+  },
+  {
+    id: 8,
+    name: '加热管',
+    type: '加热元件',
+    section: '硫化',
+    quantity: 20,
+    spec: '220V 2kW',
+    model: 'JRG2-220-2'
+  },
+  // 新增mock数据
+  {
+    id: 9,
+    name: '温度继电器',
+    type: '电气元件',
+    section: '炼胶',
+    quantity: 5,
+    spec: 'AC220V',
+    model: 'OMRON-TEMP-220'
+  },
+  {
+    id: 10,
+    name: '油封',
+    type: '密封件',
+    section: '压出',
+    quantity: 18,
+    spec: 'φ50×70×10',
+    model: 'NOK-507010'
+  },
+  {
+    id: 11,
+    name: '气缸',
+    type: '气动元件',
+    section: '成型',
+    quantity: 7,
+    spec: 'SC63×200',
+    model: 'AIRTAC-SC63-200'
+  },
+  {
+    id: 12,
+    name: '压力传感器',
+    type: '传感器',
+    section: '硫化',
+    quantity: 9,
+    spec: '0-10MPa',
+    model: 'HYDAC-HDA-4744'
+  },
+  {
+    id: 13,
+    name: '变频器',
+    type: '电气元件',
+    section: '炼胶',
+    quantity: 3,
+    spec: '15kW',
+    model: 'ABB-ACS580'
+  }
+]
+
+// 管理员 mock 数据（含学历、专业、工龄、入厂时间，自动计算年龄和工龄）
+function calcYears(from) {
+  // from: 'YYYY-MM'
+  const [year, month] = from.split('-').map(Number)
+  const now = new Date()
+  let years = now.getFullYear() - year
+  if (now.getMonth() + 1 < month) years--
+  return years
+}
+
+export const adminList = [
+  {
+    id: 1,
+    name: '王强',
+    section: '炼胶',
+    birth: '1985-03',
+    age: calcYears('1985-03'),
+    entryDate: '2008-07',
+    workYears: calcYears('2008-07'),
+    major: '机械',
+    education: '本科',
+    nation: '汉族',
+    nativePlace: '江苏南京',
+    resume: '2015年晋升炼胶主管，2020年获“优秀管理员”称号。'
+  },
+  {
+    id: 2,
+    name: '李敏',
+    section: '压出',
+    birth: '1990-07',
+    age: calcYears('1990-07'),
+    entryDate: '2013-03',
+    workYears: calcYears('2013-03'),
+    major: '电气',
+    education: '硕士',
+    nation: '回族',
+    nativePlace: '安徽合肥',
+    resume: '2018年调任压出工段管理员，2021年获得“技术创新奖”。'
+  },
+  {
+    id: 3,
+    name: '张伟',
+    section: '成型',
+    birth: '1988-11',
+    age: calcYears('1988-11'),
+    entryDate: '2011-06',
+    workYears: calcYears('2011-06'),
+    major: '机械',
+    education: '本科',
+    nation: '汉族',
+    nativePlace: '山东青岛',
+    resume: '2016年调任成型工段管理员，2019年获“安全生产先进个人”。'
+  },
+  {
+    id: 4,
+    name: '赵磊',
+    section: '硫化',
+    birth: '1982-02',
+    age: calcYears('1982-02'),
+    entryDate: '2005-09',
+    workYears: calcYears('2005-09'),
+    major: '机械',
+    education: '本科',
+    nation: '满族',
+    nativePlace: '辽宁沈阳',
+    resume: '2012年调任硫化工段管理员，2017年获“管理标兵”称号。'
+  },
+  {
+    id: 5,
+    name: '陈静',
+    section: '炼胶',
+    birth: '1993-09',
+    age: calcYears('1993-09'),
+    entryDate: '2016-04',
+    workYears: calcYears('2016-04'),
+    major: '电气',
+    education: '硕士',
+    nation: '汉族',
+    nativePlace: '浙江杭州',
+    resume: '2022年晋升炼胶工段管理员，2023年获“青年岗位能手”。'
+  },
+  // 新增mock数据
+  {
+    id: 6,
+    name: '孙鹏',
+    section: '压出',
+    birth: '1987-05',
+    age: calcYears('1987-05'),
+    entryDate: '2010-08',
+    workYears: calcYears('2010-08'),
+    major: '自动化',
+    education: '本科',
+    nation: '汉族',
+    nativePlace: '河北石家庄',
+    resume: '2017年获“优秀员工”，2022年带队完成压出自动化改造。'
+  },
+  {
+    id: 7,
+    name: '周丽',
+    section: '成型',
+    birth: '1991-12',
+    age: calcYears('1991-12'),
+    entryDate: '2014-03',
+    workYears: calcYears('2014-03'),
+    major: '材料',
+    education: '硕士',
+    nation: '汉族',
+    nativePlace: '湖南长沙',
+    resume: '2019年晋升成型工段副主管，2023年获“技术创新奖”。'
+  },
+  {
+    id: 8,
+    name: '马超',
+    section: '硫化',
+    birth: '1984-10',
+    age: calcYears('1984-10'),
+    entryDate: '2007-05',
+    workYears: calcYears('2007-05'),
+    major: '机械',
+    education: '本科',
+    nation: '回族',
+    nativePlace: '宁夏银川',
+    resume: '2015年获“安全生产标兵”，2021年主导硫化设备升级。'
+  },
+  {
+    id: 9,
+    name: '李雪',
+    section: '炼胶',
+    birth: '1995-06',
+    age: calcYears('1995-06'),
+    entryDate: '2018-09',
+    workYears: calcYears('2018-09'),
+    major: '化工',
+    education: '本科',
+    nation: '汉族',
+    nativePlace: '四川成都',
+    resume: '2020年获“优秀新人”，2024年晋升炼胶工段主管。'
+  }
+]
