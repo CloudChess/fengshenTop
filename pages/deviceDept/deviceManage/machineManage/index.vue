@@ -14,14 +14,17 @@
           </view>
         </view>
       </view>
-      <input class="filter-input" v-model="filterValue" :placeholder="filterPlaceholder" @input="onInput" />
+      <view class="input-box" >
+        <input class="filter-input" v-model="filterValue" :placeholder="filterPlaceholder" @focus="enumInputFocusHandle" @blur="hiddenEnum" />
+        <view v-show="showEnumCandidates" class="enum-candidates">
+          <view class="enum-candidate" v-for="c in enumCandidates" :key="c" @mousedown="selectEnumCandidate(c)">{{ c }}</view>
+        </view>
+      </view>
       <button class="toolBtn search-btn" @click="doFilter">搜索</button>
       <button class="toolBtn reset-btn" @click="resetFilter">重置</button>
+      <button class="toolBtn add-btn" @click="openAdd">新增</button>
     </view>
-    <!-- 枚举字段候选词 -->
-    <view v-if="showEnumCandidates" class="enum-candidates">
-      <view class="enum-candidate" v-for="c in enumCandidates" :key="c" @click="selectEnumCandidate(c)">{{ c }}</view>
-    </view>
+    
     <view class="table-card">
       <view class="table">
         <view class="table-row table-header">
@@ -68,15 +71,10 @@
       <view class="dialog">
         <view class="dialog-title">{{ editIdx === null ? '添加设备' : '编辑设备' }}</view>
         <view class="dialog-body">
-          <input v-model="form.name" placeholder="设备名称" />
-          <input v-model="form.type" placeholder="类型" />
-          <input v-model="form.section" placeholder="工段" />
-          <input v-model="form.status" placeholder="状态" />
-          <input v-model="form.principal" placeholder="负责人" />
-          <input v-model="form.maintainer" placeholder="检修人" />
-          <input v-model="form.entryDate" placeholder="入厂时间" />
-          <input v-model="form.location" placeholder="位置" />
-          <input v-model="form.remark" placeholder="备注" />
+          <view class="form-row" v-for="f in detailFields" :key="f.value">
+            <label class="form-label">{{ f.label }}</label>
+            <input class="edit-input" v-model="form[f.value]" :placeholder="f.label" />
+          </view>
           <view v-if="errorMsg" class="form-error">{{ errorMsg }}</view>
         </view>
         <view class="dialog-footer">
@@ -120,6 +118,10 @@ import { machineList } from '@/utils/mockData.js'
 
 const dataList = ref(machineList.map(item => ({ ...item })))
 
+const test = () =>{
+  console.log("test")
+}
+
 // 响应式屏幕宽度
 const isNarrowScreen = ref(false)
 function handleResize() {
@@ -147,27 +149,30 @@ const filterFields = [
 ]
 const filterField = ref(filterFields[0].value)
 const filterValue = ref('')
+const showEnumCandidates = ref(false)
 const filterPlaceholder = computed(() => {
   const f = filterFields.find(f => f.value === filterField.value)
   return f ? `请输入${f.label}` : '请输入筛选内容'
 })
 
 // 枚举候选词逻辑
-const showEnumCandidates = computed(() => {
-  const f = filterFields.find(f => f.label === filterField.value)
-  return f && f.type === 'enum' && filterValue.value && enumCandidates.value.length > 0
-})
+const enumInputFocusHandle = ()=>{
+  const isEnum = filterFields.find(f => f.value === filterField.value)
+  if(isEnum) showEnumCandidates.value = true
+}
 const enumCandidates = computed(() => {
   const f = filterFields.find(f => f.value === filterField.value)
   if (!f || f.type !== 'enum') return []
-  return f.candidates.filter(c => c.includes(filterValue.value))
+  return f.candidates
 })
 function selectEnumCandidate(val) {
   filterValue.value = val
+  showEnumCandidates.value = false
 }
-function onInput() {
-  // nothing, just for v-model
+const hiddenEnum = ()=>{
+  showEnumCandidates.value = false
 }
+
 
 // 筛选逻辑
 const filteredList = ref([...dataList.value])
@@ -358,6 +363,9 @@ button{
   justify-content: flex-start;
   gap: 10rpx;
 }
+.input-box{
+  position: relative;
+}
 .filter-input{
     background-color: #eeeeee;
     color: #353535;
@@ -367,6 +375,25 @@ button{
 }
 .filter-input:focus {
     border:1rpx solid #777777 ;
+}
+.enum-candidates{
+  position: absolute;
+  width: 100%;
+  border-bottom-left-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  background-color: #fff;
+  box-shadow:0 4rpx 16rpx rgba(0,0,0,0.08);
+  z-index: 10;
+}
+.enum-candidate {
+  padding: 12rpx 20rpx;
+  color: #353535;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.enum-candidate:hover, .enum-candidate.active {
+  background: #f0f0f8;
+  color: #145fff;
 }
 .toolBtn{
     margin: 0;
@@ -380,6 +407,15 @@ button{
 }
 .reset-btn{
     color: #5a5a5a;
+}
+.add-btn{
+  margin-left: 20rpx;
+  border: 1rpx solid #709cfc;
+  background-color: #fff;
+  color: #556c9c;
+}
+.add-btn:hover{
+  outline: 3rpx solid #709cfc;
 }
 .table-card{
     width: 100%;
@@ -414,6 +450,7 @@ button{
     line-height: 80rpx;
     padding: 12rpx;
     text-align: center;
+    overflow: hidden;
 }
 
 .table-opBtns{
@@ -545,7 +582,150 @@ button{
   background: #f04343;
 }
 
+/* 弹窗样式 */
+.dialog-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  min-width: 800rpx;
+  max-width: 92vw;
+  padding: 32px 28px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+}
+.dialog-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 18px;
+  text-align: left;
+  letter-spacing: 1px;
+}
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-bottom: 18px;
+}
+/* 表单行样式 */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.form-label {
+  min-width: 80px;
+  color: #909399;
+  font-size: 24rpx;
+  margin-right: 12px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.dialog-body input {
+  flex: 1;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 25rpx;
+  background: #fafbfc;
+  color: #303133;
+  outline: none;
+  transition: border 0.2s;
+  width: 100%;
+}
+.dialog-body input:focus {
+  border-color: #409eff;
+  background: #fff;
+}
+.form-error {
+  color: #f56c6c;
+  font-size: 13px;
+  margin-top: 4px;
+  text-align: left;
+}
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-top: 6rpx;
+}
+.dialog-footer button {
+  min-width: 88px;
+  padding: 8rpx 0;
+  border-radius: 6rpx;
+  font-size: 22rpx;
+  border: none;
+  background: #409eff;
+  color: #fff;
+  font-weight: 500;
+  transition: background 0.2s;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.dialog-footer button:last-child {
+  background: #f4f4f5;
+  color: #606266;
+}
+.dialog-footer button:active {
+  background: #337ecc;
+}
+
+/* 详情弹窗样式 */
+.detail-dialog {
+  min-width: 340px;
+  max-width: 92vw;
+  padding: 32px 28px 20px 28px;
+}
+.detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 0 0;
+}
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  font-size: 15px;
+  color: #303133;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 7px 0;
+}
+.detail-row:last-child {
+  border-bottom: none;
+}
+.detail-label {
+  min-width: 90px;
+  color: #909399;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.detail-value {
+  flex: 1;
+  color: #303133;
+  margin-left: 8px;
+  word-break: break-all;
+}
+
 @media (max-width: 900px) {
-    
+  .dialog{
+    min-width: 500rpx;
+  }
+  .detail-dialog{
+    min-width: 500rpx;
+  }
 }
 </style>

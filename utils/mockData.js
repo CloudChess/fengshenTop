@@ -724,6 +724,62 @@ export const alarmList = [
   }
 ];
 
+// 设备故障 mock 数据
+export const deviceFaultList = [
+  {
+    id: 1,
+    deviceName: '炼胶机#01',
+    section: '炼胶',
+    type: '炼胶机',
+    faultTime: '2024-07-08 09:30',
+    faultType: '电机过热',
+    status: '未处理',
+    description: '主电机温度异常升高，自动停机保护',
+    principal: '张师傅',
+    maintainer: '李工',
+    remark: '需更换冷却风扇'
+  },
+  {
+    id: 2,
+    deviceName: '压出机#02',
+    section: '压出',
+    type: '压出机',
+    faultTime: '2024-07-07 15:20',
+    faultType: '液压系统泄漏',
+    status: '处理中',
+    description: '液压油管破裂导致压力不足',
+    principal: '王师傅',
+    maintainer: '赵工',
+    remark: '已更换部分油管'
+  },
+  {
+    id: 3,
+    deviceName: '成型机#03',
+    section: '成型',
+    type: '成型机',
+    faultTime: '2024-07-06 11:10',
+    faultType: '传感器故障',
+    status: '已处理',
+    description: '温度传感器失灵，无法自动调节温度',
+    principal: '刘师傅',
+    maintainer: '钱工',
+    remark: '已更换传感器，恢复正常'
+  },
+  {
+    id: 4,
+    deviceName: '硫化机#04',
+    section: '硫化',
+    type: '硫化机',
+    faultTime: '2024-07-05 17:45',
+    faultType: 'PLC故障',
+    status: '未处理',
+    description: 'PLC模块无响应，设备无法启动',
+    principal: '赵师傅',
+    maintainer: '孙工',
+    remark: '待更换PLC模块'
+  }
+]
+
 export const machineList = [
   /**
    * 设备列表 mock 数据
@@ -1028,7 +1084,9 @@ export const adminList = [
     education: '本科',
     nation: '汉族',
     nativePlace: '江苏南京',
-    resume: '2015年晋升炼胶主管，2020年获“优秀管理员”称号。'
+    taskNum:5,
+    lastMer:'A',
+    resume: '2015年晋升炼胶主管，2020年获"优秀管理员"称号。'
   },
   {
     id: 2,
@@ -1042,7 +1100,9 @@ export const adminList = [
     education: '硕士',
     nation: '回族',
     nativePlace: '安徽合肥',
-    resume: '2018年调任压出工段管理员，2021年获得“技术创新奖”。'
+    taskNum:0,
+    lastMer:'B',
+    resume: '2018年调任压出工段管理员，2021年获得"技术创新奖"。'
   },
   {
     id: 3,
@@ -1056,7 +1116,9 @@ export const adminList = [
     education: '本科',
     nation: '汉族',
     nativePlace: '山东青岛',
-    resume: '2016年调任成型工段管理员，2019年获“安全生产先进个人”。'
+    taskNum:0,
+    lastMer:'C',
+    resume: '2016年调任成型工段管理员，2019年获"安全生产先进个人"。'
   },
   {
     id: 4,
@@ -1070,7 +1132,9 @@ export const adminList = [
     education: '本科',
     nation: '满族',
     nativePlace: '辽宁沈阳',
-    resume: '2012年调任硫化工段管理员，2017年获“管理标兵”称号。'
+    taskNum:3,
+    lastMer:'A',
+    resume: '2012年调任硫化工段管理员，2017年获"管理标兵"称号。'
   },
   {
     id: 5,
@@ -1084,9 +1148,10 @@ export const adminList = [
     education: '硕士',
     nation: '汉族',
     nativePlace: '浙江杭州',
-    resume: '2022年晋升炼胶工段管理员，2023年获“青年岗位能手”。'
+    taskNum:2,
+    lastMer:'A',
+    resume: '2022年晋升炼胶工段管理员，2023年获"青年岗位能手"。'
   },
-  // 新增mock数据
   {
     id: 6,
     name: '孙鹏',
@@ -1099,7 +1164,9 @@ export const adminList = [
     education: '本科',
     nation: '汉族',
     nativePlace: '河北石家庄',
-    resume: '2017年获“优秀员工”，2022年带队完成压出自动化改造。'
+    taskNum:1,
+    lastMer:'B',
+    resume: '2017年获"优秀员工"，2022年带队完成压出自动化改造。'
   },
   {
     id: 7,
@@ -1113,7 +1180,9 @@ export const adminList = [
     education: '硕士',
     nation: '汉族',
     nativePlace: '湖南长沙',
-    resume: '2019年晋升成型工段副主管，2023年获“技术创新奖”。'
+    taskNum:0,
+    lastMer:'C',
+    resume: '2019年晋升成型工段副主管，2023年获"技术创新奖"。'
   },
   {
     id: 8,
@@ -1127,7 +1196,9 @@ export const adminList = [
     education: '本科',
     nation: '回族',
     nativePlace: '宁夏银川',
-    resume: '2015年获“安全生产标兵”，2021年主导硫化设备升级。'
+    taskNum:1,
+    lastMer:'B',
+    resume: '2015年获"安全生产标兵"，2021年主导硫化设备升级。'
   },
   {
     id: 9,
@@ -1141,6 +1212,503 @@ export const adminList = [
     education: '本科',
     nation: '汉族',
     nativePlace: '四川成都',
-    resume: '2020年获“优秀新人”，2024年晋升炼胶工段主管。'
+    taskNum:0,
+    lastMer:'C',
+    resume: '2020年获"优秀新人"，2024年晋升炼胶工段主管。'
   }
+]
+
+export const workerList = [
+  {
+    id: 1,
+    name: '张三',
+    section: '炼胶',
+    birth: '1990-05',
+    age: calcYears('1990-05'),
+    entryDate: '2015-03',
+    workYears: calcYears('2015-03'),
+    major: '机械',
+    education: '专科',
+    nation: '汉族',
+    nativePlace: '山东济南',
+    taskNum: 5,
+    lastMer: 'A',
+    resume: null
+  },
+  {
+    id: 2,
+    name: '李四',
+    section: '压出',
+    birth: '1992-08',
+    age: calcYears('1992-08'),
+    entryDate: '2017-06',
+    workYears: calcYears('2017-06'),
+    major: '电气',
+    education: '高中',
+    nation: '回族',
+    nativePlace: '河南郑州',
+    taskNum: 0,
+    lastMer: 'B',
+    resume: null
+  },
+  {
+    id: 3,
+    name: '王五',
+    section: '成型',
+    birth: '1988-12',
+    age: calcYears('1988-12'),
+    entryDate: '2013-10',
+    workYears: calcYears('2013-10'),
+    major: '自动化',
+    education: '中专',
+    nation: '汉族',
+    nativePlace: '江苏苏州',
+    taskNum: 0,
+    lastMer: 'C',
+    resume: null
+  },
+  {
+    id: 4,
+    name: '赵六',
+    section: '硫化',
+    birth: '1985-03',
+    age: calcYears('1985-03'),
+    entryDate: '2010-05',
+    workYears: calcYears('2010-05'),
+    major: '机械',
+    education: '专科',
+    nation: '满族',
+    nativePlace: '吉林长春',
+    taskNum: 3,
+    lastMer: 'A',
+    resume: null
+  },
+  {
+    id: 5,
+    name: '钱七',
+    section: '炼胶',
+    birth: '1993-11',
+    age: calcYears('1993-11'),
+    entryDate: '2018-09',
+    workYears: calcYears('2018-09'),
+    major: '化工',
+    education: '中专',
+    nation: '汉族',
+    nativePlace: '浙江宁波',
+    taskNum: 2,
+    lastMer: 'A',
+    resume: null
+  },
+  {
+    id: 6,
+    name: '孙八',
+    section: '压出',
+    birth: '1989-07',
+    age: calcYears('1989-07'),
+    entryDate: '2014-02',
+    workYears: calcYears('2014-02'),
+    major: '材料',
+    education: '高中',
+    nation: '汉族',
+    nativePlace: '安徽芜湖',
+    taskNum: 1,
+    lastMer: 'B',
+    resume: null
+  },
+  {
+    id: 7,
+    name: '周九',
+    section: '成型',
+    birth: '1991-04',
+    age: calcYears('1991-04'),
+    entryDate: '2016-08',
+    workYears: calcYears('2016-08'),
+    major: '机械',
+    education: '专科',
+    nation: '汉族',
+    nativePlace: '江西南昌',
+    taskNum: 0,
+    lastMer: 'C',
+    resume: null
+  },
+  {
+    id: 8,
+    name: '吴十',
+    section: '硫化',
+    birth: '1987-10',
+    age: calcYears('1987-10'),
+    entryDate: '2012-05',
+    workYears: calcYears('2012-05'),
+    major: '电气',
+    education: '高中',
+    nation: '回族',
+    nativePlace: '甘肃兰州',
+    taskNum: 1,
+    lastMer: 'B',
+    resume: null
+  },
+  {
+    id: 9,
+    name: '郑十一',
+    section: '炼胶',
+    birth: '1994-02',
+    age: calcYears('1994-02'),
+    entryDate: '2019-07',
+    workYears: calcYears('2019-07'),
+    major: '自动化',
+    education: '中专',
+    nation: '汉族',
+    nativePlace: '福建厦门',
+    taskNum: 0,
+    lastMer: 'C',
+    resume: null
+  }
+]    
+
+// 工段-车间-设备三级结构 mock 数据
+export const workshopTree = [
+  {
+    section: '炼胶',
+    expectedInput: '原料A 100kg',
+    expectedOutput: '胶片 80kg',
+    running: 5,
+    total: 10,
+    fund: 80000,
+    workshops: [
+      {
+        name: 'A车间',
+        expectedInput: '原料A 50kg',
+        expectedOutput: '胶片 40kg',
+        running: 2,
+        total: 4,
+        devices: [
+          {
+            id: 1,
+            name: '炼胶机#01',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '张师傅',
+            maintainer: '李工',
+            modules: ['电气', '液压'],
+            info: '2022年投产，主机',
+            faultType: '电气',
+            faultHistory: [
+              { date: '2024-07-01', duration: 2.5 },
+              { date: '2024-07-03', duration: 1.2 }
+            ]
+          },
+          {
+            id: 2,
+            name: '炼胶机#02',
+            img: '/static/logo.png',
+            status: '停机',
+            principal: '王师傅',
+            maintainer: '赵工',
+            modules: ['液压'],
+            info: '备用设备',
+            faultType: '机械',
+            faultHistory: [
+              { date: '2024-07-02', duration: 4.0 }
+            ]
+          },
+          {
+            id: 7,
+            name: '炼胶机#03',
+            img: '/static/logo.png',
+            status: '维护',
+            principal: '郑师傅',
+            maintainer: '钱工',
+            modules: ['电气', '液压', '传感'],
+            info: '2023年投产',
+            faultType: '电气',
+            faultHistory: [
+              { date: '2024-07-04', duration: 2.0 }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'B车间',
+        expectedInput: '原料A 50kg',
+        expectedOutput: '胶片 40kg',
+        running: 3,
+        total: 6,
+        devices: [
+          {
+            id: 3,
+            name: '炼胶机#04',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '刘师傅',
+            maintainer: '孙工',
+            modules: ['电气'],
+            info: '2023年投产'
+          },
+          {
+            id: 8,
+            name: '炼胶机#05',
+            img: '/static/logo.png',
+            status: '故障',
+            principal: '陈师傅',
+            maintainer: '周工',
+            modules: ['液压', '传感'],
+            info: '2021年投产'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    section: '压出',
+    expectedInput: '胶片 80kg',
+    expectedOutput: '半成品 75kg',
+    running: 4,
+    total: 8,
+    fund: 60000,
+    workshops: [
+      {
+        name: 'C车间',
+        expectedInput: '胶片 40kg',
+        expectedOutput: '半成品 38kg',
+        running: 2,
+        total: 4,
+        devices: [
+          {
+            id: 4,
+            name: '压出机#01',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '林师傅',
+            maintainer: '马工',
+            modules: ['电气', '液压'],
+            info: '2021年投产'
+          },
+          {
+            id: 9,
+            name: '压出机#02',
+            img: '/static/logo.png',
+            status: '维护',
+            principal: '孙师傅',
+            maintainer: '冯工',
+            modules: ['液压', '传感'],
+            info: '2022年投产'
+          }
+        ]
+      },
+      {
+        name: 'D车间',
+        expectedInput: '胶片 40kg',
+        expectedOutput: '半成品 37kg',
+        running: 2,
+        total: 4,
+        devices: [
+          {
+            id: 10,
+            name: '压出机#03',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '高师傅',
+            maintainer: '唐工',
+            modules: ['电气'],
+            info: '2020年投产'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    section: '成型',
+    expectedInput: '半成品 75kg',
+    expectedOutput: '成型件 70kg',
+    running: 3,
+    total: 7,
+    fund: 90000,
+    workshops: [
+      {
+        name: 'E车间',
+        expectedInput: '半成品 35kg',
+        expectedOutput: '成型件 33kg',
+        running: 1,
+        total: 3,
+        devices: [
+          {
+            id: 5,
+            name: '成型机#01',
+            img: '/static/logo.png',
+            status: '维护',
+            principal: '赵师傅',
+            maintainer: '钱工',
+            modules: ['电气'],
+            info: '2020年投产'
+          },
+          {
+            id: 11,
+            name: '成型机#02',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '李师傅',
+            maintainer: '吴工',
+            modules: ['液压', '传感'],
+            info: '2021年投产'
+          }
+        ]
+      },
+      {
+        name: 'F车间',
+        expectedInput: '半成品 40kg',
+        expectedOutput: '成型件 37kg',
+        running: 2,
+        total: 4,
+        devices: [
+          {
+            id: 12,
+            name: '成型机#03',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '周师傅',
+            maintainer: '郑工',
+            modules: ['电气', '液压'],
+            info: '2022年投产'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    section: '硫化',
+    expectedInput: '成型件 70kg',
+    expectedOutput: '成品 68kg',
+    running: 2,
+    total: 5,
+    fund: 70000,
+    workshops: [
+      {
+        name: 'G车间',
+        expectedInput: '成型件 35kg',
+        expectedOutput: '成品 34kg',
+        running: 1,
+        total: 2,
+        devices: [
+          {
+            id: 6,
+            name: '硫化机#01',
+            img: '/static/logo.png',
+            status: '运行',
+            principal: '钱师傅',
+            maintainer: '吴工',
+            modules: ['液压'],
+            info: '2019年投产'
+          },
+          {
+            id: 13,
+            name: '硫化机#02',
+            img: '/static/logo.png',
+            status: '停机',
+            principal: '马师傅',
+            maintainer: '冯工',
+            modules: ['电气', '液压'],
+            info: '2020年投产'
+          }
+        ]
+      },
+      {
+        name: 'H车间',
+        expectedInput: '成型件 35kg',
+        expectedOutput: '成品 34kg',
+        running: 1,
+        total: 3,
+        devices: [
+          {
+            id: 14,
+            name: '硫化机#03',
+            img: '/static/logo.png',
+            status: '维护',
+            principal: '朱师傅',
+            maintainer: '郑工',
+            modules: ['液压', '传感'],
+            info: '2021年投产'
+          }
+        ]
+      }
+    ]
+  }
+]
+
+// 图表相关 mock 数据
+export const deviceStatusStats = [
+  { section: '全部', running: 20, stopped: 8, maintain: 6, error: 5 },
+  { section: '炼胶', running: 6, stopped: 2, maintain: 1, error: 1 },
+  { section: '压出', running: 5, stopped: 1, maintain: 2, error: 2 },
+  { section: '成型', running: 6, stopped: 3, maintain: 2, error: 1 },
+  { section: '硫化', running: 3, stopped: 2, maintain: 1, error: 1 }
+]
+
+export const faultTypeStats = [
+  { section: '全部', range: '7d', elec: 7, mech: 6 },
+  { section: '炼胶', range: '7d', elec: 2, mech: 1 },
+  { section: '压出', range: '7d', elec: 1, mech: 3 },
+  { section: '成型', range: '7d', elec: 3, mech: 1 },
+  { section: '硫化', range: '7d', elec: 1, mech: 1 },
+  { section: '全部', range: '30d', elec: 18, mech: 14 },
+  { section: '炼胶', range: '30d', elec: 5, mech: 3 },
+  { section: '压出', range: '30d', elec: 4, mech: 5 },
+  { section: '成型', range: '30d', elec: 6, mech: 3 },
+  { section: '硫化', range: '30d', elec: 3, mech: 3 }
+]
+
+// 生成近30天真实日期
+function getRecent30Days() {
+  const arr = []
+  const now = new Date(2024, 6, 30) // 2024年7月30日，假设今天
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(now.getDate() - i)
+    arr.push(`${d.getMonth() + 1}-${d.getDate()}`)
+  }
+  return arr
+}
+const _recent30 = getRecent30Days()
+
+export const faultTrendStats = [
+  { section: '全部', range: '7d', days: ['7-01','7-02','7-03','7-04','7-05','7-06','7-07'], counts: [2, 3, 1, 4, 2, 1, 2] },
+  { section: '炼胶', range: '7d', days: ['7-01','7-02','7-03','7-04','7-05','7-06','7-07'], counts: [1,0,0,2,1,0,1] },
+  { section: '压出', range: '7d', days: ['7-01','7-02','7-03','7-04','7-05','7-06','7-07'], counts: [0,1,1,1,0,1,0] },
+  { section: '成型', range: '7d', days: ['7-01','7-02','7-03','7-04','7-05','7-06','7-07'], counts: [1,1,0,1,1,0,1] },
+  { section: '硫化', range: '7d', days: ['7-01','7-02','7-03','7-04','7-05','7-06','7-07'], counts: [0,1,0,0,0,1,0] },
+  { section: '全部', range: '30d', days: _recent30, counts: [1,2,1,2,3,2,1,2,1,3,2,1,2,1,2,3,2,1,2,1,3,2,1,2,1,2,3,2,1,2] },
+  { section: '炼胶', range: '30d', days: _recent30, counts: [0,1,0,1,2,1,0,1,0,2,1,0,1,0,1,2,1,0,1,0,2,1,0,1,0,1,2,1,0,1] },
+  { section: '压出', range: '30d', days: _recent30, counts: [1,0,1,0,1,2,1,0,1,0,2,1,0,1,0,1,2,1,0,1,0,2,1,0,1,0,1,2,1,0] },
+  { section: '成型', range: '30d', days: _recent30, counts: [1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1,0] },
+  { section: '硫化', range: '30d', days: _recent30, counts: [0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1] }
+]
+
+export const downtimeStats = [
+  { section: '全部', range: '7d', data: [
+    { name: '炼胶机#01', value: 6.5 },
+    { name: '炼胶机#02', value: 2.3 },
+    { name: '压出机#01', value: 4.0 },
+    { name: '压出机#02', value: 1.8 },
+    { name: '成型机#01', value: 3.2 },
+    { name: '成型机#02', value: 1.7 },
+    { name: '硫化机#01', value: 2.8 },
+    { name: '硫化机#02', value: 1.2 }
+  ] },
+  { section: '炼胶', range: '7d', data: [ { name: '炼胶机#01', value: 6.5 }, { name: '炼胶机#02', value: 2.3 } ] },
+  { section: '压出', range: '7d', data: [ { name: '压出机#01', value: 4.0 }, { name: '压出机#02', value: 1.8 } ] },
+  { section: '成型', range: '7d', data: [ { name: '成型机#01', value: 3.2 }, { name: '成型机#02', value: 1.7 } ] },
+  { section: '硫化', range: '7d', data: [ { name: '硫化机#01', value: 2.8 }, { name: '硫化机#02', value: 1.2 } ] },
+  { section: '全部', range: '30d', data: [
+    { name: '炼胶机#01', value: 18.5 },
+    { name: '炼胶机#02', value: 6.0 },
+    { name: '压出机#01', value: 10.0 },
+    { name: '压出机#02', value: 5.2 },
+    { name: '成型机#01', value: 8.2 },
+    { name: '成型机#02', value: 4.5 },
+    { name: '硫化机#01', value: 7.8 },
+    { name: '硫化机#02', value: 3.1 }
+  ] },
+  { section: '炼胶', range: '30d', data: [ { name: '炼胶机#01', value: 18.5 }, { name: '炼胶机#02', value: 6.0 } ] },
+  { section: '压出', range: '30d', data: [ { name: '压出机#01', value: 10.0 }, { name: '压出机#02', value: 5.2 } ] },
+  { section: '成型', range: '30d', data: [ { name: '成型机#01', value: 8.2 }, { name: '成型机#02', value: 4.5 } ] },
+  { section: '硫化', range: '30d', data: [ { name: '硫化机#01', value: 7.8 }, { name: '硫化机#02', value: 3.1 } ] }
 ]

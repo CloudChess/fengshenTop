@@ -78,6 +78,7 @@
           <view class="card-row">
             <view class="card card-task">
              <view class="card-title">任务状况</view>
+             <view class="card-content">
               <view class="task-list">
                 <view
                   v-for="(section, idx) in sectionTasks"
@@ -142,6 +143,7 @@
                   </view>
                 </view>
               </view>
+             </view>
             </view>
             <view class="card">
               <view class="card-title alarm-card-title-flex">
@@ -152,7 +154,8 @@
                   <input type="date" v-model="alarmEndDate" class="alarm-date-input" />
                 </view>
               </view>
-              <view class="alarm-list">
+              <view class="card-content">
+                <view class="alarm-list">
                 <view v-for="(alarm, idx) in filteredAlarmList" :key="idx" class="alarm-item">
                   <view class="alarm-main">
                     <span class="alarm-type">{{ alarm.type }}</span>
@@ -165,10 +168,12 @@
                   </view>
                 </view>
               </view>
+              </view>
             </view>
             <view class="card card-shortcut">
               <view class="card-title">快捷入口</view>
-              <view class="shortcut-list">
+              <view class="card-content">
+                <view class="shortcut-list">
                 <view class="shortcut-btn gradient-blue">
                   <text class="shortcut-icon">🛠️</text>
                   <text class="shortcut-label">设备管理</text>
@@ -181,6 +186,7 @@
                   <text class="shortcut-icon">🎓</text>
                   <text class="shortcut-label">培训考试</text>
                 </view>
+              </view>
               </view>
             </view>
           </view>
@@ -579,6 +585,9 @@ function showEmployeeProblemDevices(person) {
   }
   
   .main-content {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
     flex: 1;
     padding: 36px 36px 24px 36px;
     display: flex;
@@ -609,6 +618,7 @@ function showEmployeeProblemDevices(person) {
     gap: 24px;
   }
   .card {
+    max-height: 800rpx;
     background: #fff;
     border-radius: 14px;
     box-shadow: 0 4px 24px rgba(52,120,246,0.06);
@@ -768,7 +778,6 @@ function showEmployeeProblemDevices(person) {
     min-width: 200px;
   }
   .card-content{
-    max-height: 220px;
     overflow: auto;
     padding-right: 4px;
   }
@@ -1562,6 +1571,13 @@ function showEmployeeProblemDevices(person) {
   @media (max-width: 900px) {
     .main-content{
       padding: 12px 2vw 8px 2vw;
+    }
+    .card-title{
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-title-count{
+      margin: 0;
     }
     .card-row{
       flex-direction: column;
