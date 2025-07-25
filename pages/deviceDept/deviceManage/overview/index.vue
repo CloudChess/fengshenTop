@@ -103,10 +103,18 @@
           <div class="task-title">任务操作区</div>
           <div class="task-form-row">
             <label>任务类型</label>
-            <select v-model="taskForm.type">
+            <select class="task-form-select" v-model="taskForm.type">
               <option value="" disabled>请选择</option>
               <option v-for="t in taskTypes" :key="t" :value="t">{{ t }}</option>
             </select>
+          </div>
+           <div class="task-form-row">
+            <label>任务名称</label>
+            <input class="task-form-input" v-model="taskForm.name" placeholder="请输入任务名称" />
+          </div>
+          <div class="task-form-row">
+            <label>计划时间</label>
+            <input class="task-form-date" v-model="taskForm.planTime" type="date" />
           </div>
           <div class="task-form-row">
             <label>设备</label>
@@ -143,14 +151,6 @@
               </span>
               <span class="device-placeholder" v-if="!adminIds.length">未指定</span>
             </p>
-          </div>
-          <div class="task-form-row">
-            <label>任务名称</label>
-            <input v-model="taskForm.name" placeholder="请输入任务名称" />
-          </div>
-          <div class="task-form-row">
-            <label>计划时间</label>
-            <input v-model="taskForm.planTime" type="date" />
           </div>
           <button class="task-publish-btn" @click="publishTask">发布任务</button>
           <div v-if="taskPublishMsg" class="task-publish-msg">{{ taskPublishMsg }}</div>
@@ -594,7 +594,6 @@ function publishTask() {
   padding: 20rpx;
   flex: 1;
   min-width: 0;
-  max-height: 800rpx;
   display: flex;
   flex-direction: column;
   gap: 10rpx;
@@ -655,11 +654,12 @@ function publishTask() {
   padding-left: 8px;
 }
 .card-workshop {
+  
   background: #f7f7f7;
   border-radius: 14px;
   box-shadow: 0 4px 24px rgba(52,120,246,0.06);
   padding: 24px 20px;
-  min-height: 220px;
+  max-height: 800rpx;
   overflow: hidden;
 }
 .section-card-row {
@@ -702,7 +702,6 @@ function publishTask() {
   flex-wrap: wrap;
   gap: 24px;
   padding: 32px;
-  margin-top: 24px;
 }
 .chart-card {
   flex: 1;
@@ -968,17 +967,26 @@ function publishTask() {
   color: #888;
   margin-bottom: 2px;
 }
-.task-form-row select, .task-form-row input[type='text'], .task-form-row input[type='date'] {
+.task-form-row select {
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   padding: 6px 10px;
-  font-size: 15px;
-  color: #333;
-  background: #f7f7f7;
+  font-size: 26rpx;
+  color: #424242;
+  background: #ffffff;
   outline: none;
 }
 .task-form-row select[multiple] {
   min-height: 60px;
+}
+.task-form-input, .task-form-date{
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 26rpx;
+  color: #424242;
+  background: #ffffff;
+  outline: none;
 }
 .task-title-select{
   font-size: 24rpx;
@@ -1036,13 +1044,14 @@ function publishTask() {
   color: #afafaf;
 }
 .task-publish-btn {
-  margin-top: 8px;
+  width: 200rpx;
+  height: 70rpx;
+  line-height: 70rpx;
   background: #3478f6;
   color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 16px;
-  padding: 8px 0;
   cursor: pointer;
   transition: background 0.2s;
 }
